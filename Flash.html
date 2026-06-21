@@ -62,34 +62,6 @@
     </div>
 
     <script>
-        // Dữ liệu câu hỏi mẫu
-        // const quizData = [
-        //     {
-        //         question: "Câu 1: Phần mềm (software) gồm:",
-        //         options: [
-        //             "A. Những thiết bị vật lý cấu tạo nên máy vi tính",
-        //             "B. Các thành phần dùng để nhập dữ liệu vào máy vi tính",
-        //             "C. Các chương trình điều khiển mọi hoạt động của máy vi tính",
-        //             "D. Các thành phần dùng để nhập xuất dữ liệu của máy vi tính"
-        //         ],
-        //         correct: 2 // C
-        //     },
-        //     {
-        //         question: "Câu 2: Công nghệ (engineering) là:",
-        //         options: [
-        //             "A. Cách sử dụng các công cụ, các kỹ thuật trong cách giải quyết một vấn đề nào đó",
-        //             "B. Cách lập trình để viết một phần mềm",
-        //             "C. Cách phân tích thiết kế một phần mềm",
-        //             "D. Cách cài đặt một phần mềm"
-        //         ],
-        //         correct: 0 // A
-        //     }
-
-        // ];
-        // Dữ liệu được tạo tự động từ file CÔNG_NGHỆ_PHẦN_MỀM.docx
-        // Các câu có '// CẦN KIỂM TRA' là những câu KHÔNG xác định được đáp án đúng
-        // (không có đáp án nào được bôi đỏ, có nhiều hơn 1 đáp án bôi đỏ, hoặc không đúng dạng trắc nghiệm 4 lựa chọn)
-        // Vui lòng kiểm tra và bổ sung 'correct' cho các câu này.
 
         const quizData = [
             // ===== CHƯƠNG 1: TỔNG QUAN VỀ CÔNG NGHỆ PHẦN MỀM =====
@@ -138,7 +110,7 @@
                 options: [
                     "A. Mỗi thành viên trong nhóm phải có một số kiến thức cần thiết tùy thuộc vào vai trò trong nhóm để phát triển phần mềm",
                 ],
-                correct: null // CẦN KIỂM TRA - không xác định được đáp án đúng (n_options=1, n_red=0)
+                correct: 0 // CẦN KIỂM TRA - không xác định được đáp án đúng (n_options=1, n_red=0)
             },
             {
                 question: "Câu 5: Phần mềm dạng sản phẩm là phần mềm:",
@@ -174,7 +146,7 @@
                 options: [
                     "A. Là những người am hiểu về khả năng máy tính nhưng thường có rất ít kiến thức về các công việc chuyên môn trong thế giới thực",
                 ],
-                correct: null // CẦN KIỂM TRA - không xác định được đáp án đúng (n_options=1, n_red=0)
+                correct: 0 // CẦN KIỂM TRA - không xác định được đáp án đúng (n_options=1, n_red=0)
             },
             {
                 question: "Câu 6: Vai trò của con người trong ngành công nghiệp phần mềm:",
@@ -191,38 +163,49 @@
                 options: [
                     "A. Phần mềm đóng gói, Phần mềm khung",
                 ],
-                correct: null // CẦN KIỂM TRA - không xác định được đáp án đúng (n_options=1, n_red=0)
+                correct: 0 // CẦN KIỂM TRA - không xác định được đáp án đúng (n_options=1, n_red=0)
             },
             {
-                question: "Câu 7: Ba đối tượng nghiên cứu chính của ngành công nghệ phần mềm là gì? Khái niệm ngành công nghệ phần mềm. 2. Mục tiêu ngành công nghệ phần mềm. 3. Lịch sử ngành công nghệ phần mềm. 1. Quy trình công nghệ phần mềm. 2. Phương pháp phát triển phần mềm. 3. Công cụ và môi trường phát triển phần mềm. 1. Khái niệm ngành công nghệ phần mềm. 2. Phương pháp phát triển phần mềm.",
+                question: "Câu 7: Ba đối tượng nghiên cứu chính của ngành công nghệ phần mềm là gì?",
                 options: [
-                    "A. 3. Công cụ và môi trường phát triển phần mềm.",
-                    "B. 1. Khái niệm ngành công nghệ phần mềm",
-                    "C. 2. Mục tiêu ngành công nghệ phần mềm.",
-                    "D. 3. Công cụ và môi trường phát triển phần mềm.",
+                    `A. 1.	Khái niệm ngành công nghệ phần mềm.
+                        2. Mục tiêu ngành công nghệ phần mềm.
+                        3. Lịch sử ngành công nghệ phần mềm.`,
+                    `B. 1. Quy trình công nghệ phần mềm.
+	                    2. Phương pháp phát triển phần mềm.
+                        3. Công cụ và môi trường phát triển phần mềm`,
+                    `C. 1. Khái niệm ngành công nghệ phần mềm.
+                        2. Phương pháp phát triển phần mềm.
+                        3. Công cụ và môi trường phát triển phần mềm.`,
+                    `D. 1. Khái niệm ngành công nghệ phần mềm
+	                    2. Mục tiêu ngành công nghệ phần mềm.
+                        3. Công cụ và môi trường phát triển phần mềm.`,
                 ],
-                correct: null // CẦN KIỂM TRA - không xác định được đáp án đúng (n_options=4, n_red=0)
+                correct: 1 // CẦN KIỂM TRA - không xác định được đáp án đúng (n_options=4, n_red=0)
             },
             {
                 question: "Câu 7: Trong mô hình 3 tầng của công nghệ phần mềm, tầng nào liên quan đến việc cung cấp các phương tiện hỗ trợ tự động hay bán tự động cho các tầng còn lại?",
                 options: [
                     "A. Tầng công cụ",
                 ],
-                correct: null // CẦN KIỂM TRA - không xác định được đáp án đúng (n_options=1, n_red=0)
+                correct: 0 // CẦN KIỂM TRA - không xác định được đáp án đúng (n_options=1, n_red=0)
             },
             {
                 question: "Câu 8: Trong mô hình 3 tầng của công nghệ phần mềm, tầng nào liên quan đến việc cung",
                 options: [
-                    "A. cấp các phương tiện hỗ trợ tự động hay bán tự động cho các tầng còn lại?",
+                    "A. Tầng công cụ",
+                    "B. Tầng phương pháp",
+                    "C. Tầng mô hình",
+                    "D. Tầng quy trình",
                 ],
-                correct: null // CẦN KIỂM TRA - không xác định được đáp án đúng (n_options=1, n_red=0)
+                correct: 2 // C
             },
             {
                 question: "Câu 8: Tầng nào trong 1 mô hình của công nghệ phần mềm liên quan đến tất cả các công đoạn phát triển hệ thống như nghiên cứu yêu cầu, thiết kế, lập trình, kiểm thử và bảo trì. Phương pháp dựa trên những nguyên lý cơ bản nhất cho tất cả các lĩnh vực công nghệ kể cả các hoạt động mô hình hóa và kỹ thuật mô tả",
                 options: [
                     "A. Tầng phương pháp",
                 ],
-                correct: null // CẦN KIỂM TRA - không xác định được đáp án đúng (n_options=1, n_red=0)
+                correct: 0 // CẦN KIỂM TRA - không xác định được đáp án đúng (n_options=1, n_red=0)
             },
             {
                 question: "Câu 9: Trong hồ sơ phần mềm, phần tài liệu bảo trì không bao gồm:",
@@ -237,15 +220,19 @@
             {
                 question: "Câu 9. Tầng nào trong một mô hình của công nghệ phần mềm liên quan đến việc cung cấp các phương tiện hỗ trợ tự động hay bán tự động cho các tầng quá trình và phương pháp (công nghệ): A. Tầng công cụ B. Tầng phương pháp C. Tầng mô hình D. Tầng quy trình",
                 options: [
+                    "A. Tầng công cụ",
+                    "B. Tầng phương pháp",
+                    "C. Tầng mô hình",
+                    "D. Tầng quy trình",
                 ],
-                correct: null // CẦN KIỂM TRA - không xác định được đáp án đúng (n_options=0, n_red=0)
+                correct: 0 // A
             },
             {
                 question: "Câu 9: Mọi ứng dụng đều có một số đặc điểm chung (tương đồng) và một số đặc điểm riêng. Các đặc điểm chung của ứng dụng thường được đề cập là:",
                 options: [
                     "A. Tính đáp ứng(Responsiveness)",
                 ],
-                correct: null // CẦN KIỂM TRA - không xác định được đáp án đúng (n_options=1, n_red=0)
+                correct: 0 // CẦN KIỂM TRA - không xác định được đáp án đúng (n_options=1, n_red=0)
             },
             {
                 question: "Câu 10: Liên quan đến phần mềm quản lý giáo dục, trong các đối tượng sau đối tượng nào không phải là nhà chuyên môn?",
@@ -262,7 +249,7 @@
                 options: [
                     "A. Xử lý theo lô",
                 ],
-                correct: null // CẦN KIỂM TRA - không xác định được đáp án đúng (n_options=1, n_red=0)
+                correct: 0 // CẦN KIỂM TRA - không xác định được đáp án đúng (n_options=1, n_red=0)
             },
             {
                 question: "Câu 10. Phần mềm nhúng (Embedded) là phần mềm:",
@@ -282,33 +269,41 @@
                     "C. Bắt đầu / hết vòng đời",
                     "D. Sản phẩm đầu tiên được hình thành / kết thúc",
                 ],
-                correct: null // CẦN KIỂM TRA - không xác định được đáp án đúng (n_options=4, n_red=0)
+                correct: 0 // CẦN KIỂM TRA - không xác định được đáp án đúng (n_options=4, n_red=0)
             },
             {
                 question: "Câu 11: Phần mềm ứng dụng nào được sử dụng nhằm hỗ trợ các hoạt động hằng ngày của một công việc, bao gồm: xử lý đơn hàng, quản lý kiểm kê, ghi quỹ, … Chúng được đặc trưng như là các ứng dụng và trong đó các yêu cầu, các dữ liệu và quá trình xử lý được biết rõ và có cấu trúc tốt?",
                 options: [
                     "A. Ứng dụng hướng giao dịch",
                 ],
-                correct: null // CẦN KIỂM TRA - không xác định được đáp án đúng (n_options=1, n_red=0)
+                correct: 0 // CẦN KIỂM TRA - không xác định được đáp án đúng (n_options=1, n_red=0)
             },
             {
                 question: "Câu 12: Những người biết vận dụng sáng tạo CNTT vào nghiệp vụ chuyên môn được gọi là:",
                 options: [
+                    "A. Nhà chuyên môn",
+                    "B. Quản trị hệ thống",
+                    "C. Chuyên gia",
+                    "D. Lập trình viên",
                 ],
-                correct: null // CẦN KIỂM TRA - không xác định được đáp án đúng (n_options=0, n_red=0)
+                correct: 0 // CẦN KIỂM TRA - không xác định được đáp án đúng (n_options=0, n_red=0)
             },
             {
                 question: "Câu 12: Các đặc tính của 1 sản phẩm phần mềm?",
                 options: [
                     "A. Dữ liệu, xử lý, ràng buộc, giao diện",
                 ],
-                correct: null // CẦN KIỂM TRA - không xác định được đáp án đúng (n_options=1, n_red=0)
+                correct: 0 // CẦN KIỂM TRA - không xác định được đáp án đúng (n_options=1, n_red=0)
             },
             {
                 question: "Câu 13: Những người tham gia quản lý và vận hành các hệ thống CNTT được gọi là:",
                 options: [
+                    "A. Nhà chuyên môn",
+                    "B. Quản trị hệ thống",
+                    "C. Chuyên gia",
+                    "D. Lập trình viên",
                 ],
-                correct: null // CẦN KIỂM TRA - không xác định được đáp án đúng (n_options=0, n_red=0)
+                correct: 1 // CẦN KIỂM TRA - không xác định được đáp án đúng (n_options=0, n_red=0)
             },
             {
                 question: "Câu 13. Những người có trình độ nhất định về công việc và kinh nghiệm kỹ thuật đào tạo, huấn luyện người khác. Họ giám sát người khác, phụ thuộc vào quy mô, sự phức tạp của các dự án, họ thường xuyên có điều kiện tiên quyết để lãnh đạo. Họ là ai?",
@@ -325,28 +320,37 @@
                 options: [
                     "A. Nhà chuyên môn",
                     "B. Quản trị hệ thống",
+                    "C. Nhà phát triển hệ thống",
+                    "D. Chuyên gia",
                 ],
-                correct: null // CẦN KIỂM TRA - không xác định được đáp án đúng (n_options=2, n_red=0)
+                correct: 2 // CẦN KIỂM TRA - không xác định được đáp án đúng (n_options=2, n_red=0)
             },
             {
                 question: "Câu 14: Người thực hiện những chức năng của các nhà phân tích , các nhà thiết kế và các lập trình viên được gọi là?",
                 options: [
-                    "A. Kỹ sư phần mềm B. Lập trình viên C. Nhà quản lý D. Chuyên gia",
+                    "A. Kỹ sư phần mềm",
+                    "B. Lập trình viên",
+                    "C. Nhà quản lý",
+                    "D. Chuyên gia"
                 ],
-                correct: 0 // CẦN KIỂM TRA - A (n_options=1, n_red=1)
+                correct: 0
             },
             {
                 question: "Câu 15: Trong các mô hình phát triển phần mềm sau, mô hình nào được xem là mô hình của cách tiếp cận hướng đối tượng?",
                 options: [
+                    "A. Mô hình đài phun nước",
+                    "B. Mô hình xoắn ốc",
+                    "C. Mô hình tuyến tính",
+                    "D. Mô hình mẫu",
                 ],
-                correct: null // CẦN KIỂM TRA - không xác định được đáp án đúng (n_options=0, n_red=0)
+                correct: 0 // CẦN KIỂM TRA - không xác định được đáp án đúng (n_options=0, n_red=0)
             },
             {
                 question: "Câu 15: Người làm việc cho nhóm người dùng cuôi hoặc bán hàng để cung cấp những chuyên môn kỹ thuật liên quan đến sản phẩm hoặc những hỗ trợ trên đường dây nóng khác được gọi là:",
                 options: [
                     "A. Nhân viên hỗ trợ sản phẩm",
                 ],
-                correct: null // CẦN KIỂM TRA - không xác định được đáp án đúng (n_options=1, n_red=0)
+                correct: 0 // CẦN KIỂM TRA - không xác định được đáp án đúng (n_options=1, n_red=0)
             },
             {
                 question: "Câu 16: Mô hình phát triển phần mềm nào có 4 mục tiêu sau? Planning: Xác định mục tiêu, tương tác và ràng buộc. Risk analysis: Phân tích các lựa chọn và các chỉ định/giải quyết rủi ro. Engineering : Phát triển sản phẩm Customer evaluation: Đánh giá kết quả xây dựng.",
@@ -373,7 +377,7 @@
                 options: [
                     "A. Nhà phân tích và kỹ sư truyền thông",
                 ],
-                correct: null // CẦN KIỂM TRA - không xác định được đáp án đúng (n_options=1, n_red=0)
+                correct: 0 // CẦN KIỂM TRA - không xác định được đáp án đúng (n_options=1, n_red=0)
             },
             {
                 question: "Câu 17: Quá trình phát triển phần mềm gồm các giai đoạn sau là của mô hình nào? Phác thảo nét chính -> Xây dựng phần mềm -> Sử dụng phần mềm <Hệ thống thích hợp> -> chuyển giao phần mềm (Nếu không quay lại bước 2)",
@@ -390,7 +394,7 @@
                 options: [
                     "A. Quản trị mạng",
                 ],
-                correct: null // CẦN KIỂM TRA - không xác định được đáp án đúng (n_options=1, n_red=0)
+                correct: 0 // CẦN KIỂM TRA - không xác định được đáp án đúng (n_options=1, n_red=0)
             },
             {
                 question: "Câu 18: Thứ tự thực hiện nào là đúng đối với mô hình xoắn ốc:",
@@ -407,7 +411,7 @@
                 options: [
                     "A. Trung cấp",
                 ],
-                correct: null // CẦN KIỂM TRA - không xác định được đáp án đúng (n_options=1, n_red=0)
+                correct: 0 // CẦN KIỂM TRA - không xác định được đáp án đúng (n_options=1, n_red=0)
             },
             {
                 question: "Câu 19: Ở mô hình thác nước cổ điển, quy trình 2 giai đoạn bao gồm:",
@@ -424,7 +428,7 @@
                 options: [
                     "A. Trung cấp",
                 ],
-                correct: null // CẦN KIỂM TRA - không xác định được đáp án đúng (n_options=1, n_red=0)
+                correct: 0 // CẦN KIỂM TRA - không xác định được đáp án đúng (n_options=1, n_red=0)
             },
             {
                 question: "Câu 20: Loại mô hình nào được tạo ra trong phân tích yêu cầu phần mềm?",
@@ -511,7 +515,7 @@
                 options: [
                     "A. Mô hình thác nước cổ điển",
                 ],
-                correct: null // CẦN KIỂM TRA - không xác định được đáp án đúng (n_options=1, n_red=0)
+                correct: 0 // CẦN KIỂM TRA - không xác định được đáp án đúng (n_options=1, n_red=0)
             },
             {
                 question: "Câu 24. Tính chất nào không phải là tính sáng tạo của phần mềm:",
@@ -548,7 +552,7 @@
                 options: [
                     "A. Xác định yêu cầu – Phân tích – Thiết kế - Cài đặt",
                 ],
-                correct: null // CẦN KIỂM TRA - không xác định được đáp án đúng (n_options=1, n_red=0)
+                correct: 0 // CẦN KIỂM TRA - không xác định được đáp án đúng (n_options=1, n_red=0)
             },
             {
                 question: "Câu 26: Sử dụng (operations) phần mềm là:",
@@ -565,7 +569,7 @@
                 options: [
                     "A. Thiết kế",
                 ],
-                correct: null // CẦN KIỂM TRA - không xác định được đáp án đúng (n_options=1, n_red=0)
+                correct: 0 // CẦN KIỂM TRA - không xác định được đáp án đúng (n_options=1, n_red=0)
             },
             {
                 question: "Câu 26. Phần mềm thỏa mãn tính chất nào là phần mềm mà có những hỏng hóc xuất hiện khi chương trình gặp phải lỗi được chấp nhận.",
@@ -612,24 +616,24 @@
                 options: [
                     "A. Mô hình chu kỳ sống cổ điển",
                 ],
-                correct: null // CẦN KIỂM TRA - không xác định được đáp án đúng (n_options=1, n_red=0)
+                correct: 0 // CẦN KIỂM TRA - không xác định được đáp án đúng (n_options=1, n_red=0)
             },
             {
                 question: "Câu 30: Phần mềm thỏa mãn tính tiến hóa là phần mềm: Phần mềm dễ sửa đổi theo những yêu cầu mới, ngữ cảnh mới.",
                 options: [
-                    "A. Sử dụng tối ưu các tài nguyên máy tính (CPU- tốc độ, bộ nhớ - dung lượng",
-                    "B. lưu trữ,…).",
+                    "A. Phần mềm dễ sửa đổi theo những yêu cầu mới, ngữ cảnh mới.",
+                    "B. Sử dụng tối ưu các tài nguyên máy tính (CPU- tốc độ, bộ nhớ - dung lượng,lưu trữ,…).",
                     "C. Phần mềm thực hiện đầy đủ và chính xác các yêu cầu của người dùng.",
                     "D. Dễ dàng trao đổi dữ liệu hay phối hợp với các phần mềm khác",
                 ],
-                correct: null // CẦN KIỂM TRA - không xác định được đáp án đúng (n_options=4, n_red=0)
+                correct: 0 // CẦN KIỂM TRA - không xác định được đáp án đúng (n_options=4, n_red=0)
             },
             {
                 question: "Câu 30: Đâu không là ưu điểm của việc sử dụng phần mềm",
                 options: [
                     "A. Phần mềm tự động đưa ra những ý kiến đóng góp sáng tạo giúp con người có những phát minh",
                 ],
-                correct: null // CẦN KIỂM TRA - không xác định được đáp án đúng (n_options=1, n_red=0)
+                correct: 0 // CẦN KIỂM TRA - không xác định được đáp án đúng (n_options=1, n_red=0)
             },
             {
                 question: "Câu 31: Phần mềm thỏa mãn tính tương thích là phần mềm:",
@@ -661,9 +665,9 @@
             {
                 question: "Câu 32: Hệ thống các hướng dẫn cho phép từng bước thực hiện 1 giai đoạn nào đó trong quy trình phát triển phần mềm được gọi là",
                 options: [
-                    "A.  Phương pháp phát triển phần mềm",
+                    "A. Phương pháp phát triển phần mềm",
                 ],
-                correct: null // CẦN KIỂM TRA - không xác định được đáp án đúng (n_options=1, n_red=0)
+                correct: 0 // CẦN KIỂM TRA - không xác định được đáp án đúng (n_options=1, n_red=0)
             },
             {
                 question: "Câu 33: Phần mềm thỏa mãn tính an toàn là phần mềm: Có cơ chế sao lưu và phục hồi dữ liệu, xác nhận trước khi xoá, không cho phép",
@@ -678,42 +682,51 @@
             {
                 question: "Câu 33: Hoạt động chính của công nghệ phần mềm là:",
                 options: [
-                    "A.  Xây dựng phần mềm",
+                    "A.  Xây dựng phần mềm",
                 ],
-                correct: null // CẦN KIỂM TRA - không xác định được đáp án đúng (n_options=1, n_red=0)
+                correct: 0 // CẦN KIỂM TRA - không xác định được đáp án đúng (n_options=1, n_red=0)
             },
             {
-                question: "Câu 34: Tiêu chuẩn phần mềm nào được đánh giá thông qua:",
+                question: `Câu 34: Tiêu chuẩn phần mềm nào được đánh giá thông qua:
+                                    -	Có cơ chế bảo mật và bảo vệ các đối tượng do hệ thống phát sinh hoặc quản lý.
+                                    -	Bản thân sản phẩm được đặt trong một cơ chế bảo mật nhằm chống sao chép
+                                    trộm hoặc làm biến dạng sản phẩm đó.`,
                 options: [
-                    "A. Có cơ chế bảo mật và bảo vệ các đối tượng do hệ thống phát sinh hoặc quản lý.",
-                    "B. Bản thân sản phẩm được đặt trong một cơ chế bảo mật nhằm chống sao chép",
-                    "C. trộm hoặc làm biến dạng sản phẩm đó.",
+                    "A. Tính đúng",
+                    "B. Tính khoa học",
+                    "C. Tính an toàn",
+                    "D. Tính kiểm thử được",
                 ],
-                correct: null // CẦN KIỂM TRA - không xác định được đáp án đúng (n_options=3, n_red=0)
+                correct: 2 // CẦN KIỂM TRA - không xác định được đáp án đúng (n_options=3, n_red=0)
             },
             {
                 question: "Câu 34: Ràng buộc gồm các việc xác định loại đầu vào và đầu ra của dữ liệu nào được cho phép quá trình xử lý được thực hiện như thế nào và mối quan hệ giữa các quá trình với nhau là:",
                 options: [
-                    "A.  Ràng buộc về mặt cấu trúc",
+                    "A. Ràng buộc về mặt cấu trúc",
                 ],
-                correct: null // CẦN KIỂM TRA - không xác định được đáp án đúng (n_options=1, n_red=0)
+                correct: 0 // CẦN KIỂM TRA - không xác định được đáp án đúng (n_options=1, n_red=0)
             },
             {
                 question: "Câu 35: Ràng buộc mà đó là những khả năng có thể xảy ra từ một ứng dụng dựa vào các kết quả trước đó hoặc có thể dựa vào các quan hệ về dữ liệu ta có thể dẫn đến một kết quả khác là",
                 options: [
-                    "A.  Ràng buộc về suy diễn",
+                    "A. Ràng buộc về suy diễn",
                 ],
-                correct: null // CẦN KIỂM TRA - không xác định được đáp án đúng (n_options=1, n_red=0)
+                correct: 0 // CẦN KIỂM TRA - không xác định được đáp án đúng (n_options=1, n_red=0)
             },
             {
-                question: "Câu 35: Một sản phẩm phần mềm thoả mãn các tính chất sau: Sản phẩm được thiết kế và cài đặt đầu tiên.",
+                question: `Câu 35: Một sản phẩm phần mềm thoả mãn các tính chất sau:
+                                - Sản phẩm được thiết kế và cài đặt đầu tiên.
+                                - Sản phẩm phục vụ cho những đặc thù riêng.
+                                - Sản phẩm có những đặc điểm khác về mặt nguyên lý so với các sản phẩm hiện hành.
+                                - Sản phẩm có những ưu thế nổi bật so với sản phẩm hiện hành.
+                                Các đặc điểm trên thuộc tiêu chuẩn nào?`,
                 options: [
-                    "A. Sản phẩm được phục vụ cho những đặc thù riêng.",
-                    "B. Sản phẩm có những đặc điểm khác về mặt nguyên lý so với các sản phẩm hiện hành.",
-                    "C. Sản phẩm có những ưu thế nổi bật so với sản phẩm hiện hành.",
-                    "D. Thuộc tiêu chuẩn nào?",
+                    "A. Tính toàn vẹn.",
+                    "B. Tính sáng tạo",
+                    "C. Tính an toàn",
+                    "D. Tính kiểm thử được",
                 ],
-                correct: null // CẦN KIỂM TRA - không xác định được đáp án đúng (n_options=4, n_red=0)
+                correct: 1 // CẦN KIỂM TRA - không xác định được đáp án đúng (n_options=4, n_red=0)
             },
 
             // ===== CHƯƠNG 2: TIÊU CHUẨN CỦA SẢN PHẨM PHẦN MỀM VÀ QUẢN LÝ DỰ ÁN PHẦN MỀM =====
@@ -740,51 +753,51 @@
             {
                 question: "Câu 37: Phần mềm thỏa mãn tính an toàn phần mềm",
                 options: [
-                    "A.  Có cơ chế sao lưu và phục hồi dữ liệu xác nhận trước khi xóa, không cho phép các thao tác xóa không hợp lệ",
+                    "A.  Có cơ chế sao lưu và phục hồi dữ liệu xác nhận trước khi xóa, không cho phép các thao tác xóa không hợp lệ",
                 ],
-                correct: null // CẦN KIỂM TRA - không xác định được đáp án đúng (n_options=1, n_red=0)
+                correct: 0 // CẦN KIỂM TRA - không xác định được đáp án đúng (n_options=1, n_red=0)
             },
             {
                 question: "Câu 38: Tính chất nào không phải tính sáng tạo của phần mềm",
                 options: [
-                    "A.  Sản phẩm mang lại lợi nhuận cao nhất cho nhà sản xuất so với các sản phẩm trước đó",
+                    "A.  Sản phẩm mang lại lợi nhuận cao nhất cho nhà sản xuất so với các sản phẩm trước đó",
                 ],
-                correct: null // CẦN KIỂM TRA - không xác định được đáp án đúng (n_options=1, n_red=0)
+                correct: 0 // CẦN KIỂM TRA - không xác định được đáp án đúng (n_options=1, n_red=0)
             },
             {
                 question: "Câu 39: Tầng phương pháp trong quy trình 3 tầng(Quy trình, phương pháp, công cụ) liên quan đến các công việc:",
                 options: [
-                    "A.  Cách thức, công nghệ, kỹ thuật để làm phần mềm",
+                    "A.  Cách thức, công nghệ, kỹ thuật để làm phần mềm",
                 ],
-                correct: null // CẦN KIỂM TRA - không xác định được đáp án đúng (n_options=1, n_red=0)
+                correct: 0 // CẦN KIỂM TRA - không xác định được đáp án đúng (n_options=1, n_red=0)
             },
             {
                 question: "Câu 40: Đối với nhà sản xuất, phần mềm dễ bảo trì là phần mềm:",
                 options: [
-                    "A.  Khi cần bảo trì dễ dàng biết được thành phần nào bảo trì và việc bảo trì không ảnh hưởng tới thành phần khác",
+                    "A.  Khi cần bảo trì dễ dàng biết được thành phần nào bảo trì và việc bảo trì không ảnh hưởng tới thành phần khác",
                 ],
-                correct: null // CẦN KIỂM TRA - không xác định được đáp án đúng (n_options=1, n_red=0)
+                correct: 0 // CẦN KIỂM TRA - không xác định được đáp án đúng (n_options=1, n_red=0)
             },
             {
                 question: "Câu 41: Dưới góc nhìn của chuyên gia tiêu chuẩn chất lượng phần mềm nào sau đây được coi trọng nhất",
                 options: [
-                    "A.  Tính khoa học",
+                    "A.  Tính khoa học",
                 ],
-                correct: null // CẦN KIỂM TRA - không xác định được đáp án đúng (n_options=1, n_red=0)
+                correct: 0 // CẦN KIỂM TRA - không xác định được đáp án đúng (n_options=1, n_red=0)
             },
             {
                 question: "Câu 43: Tiêu chuẩn phần mềm nào mà nó thực hiện chính xác những chức năng đã đặc tả và thỏa mãn các mục đích công việc của khách hàng",
                 options: [
-                    "A.  Tính đúng",
+                    "A.  Tính đúng",
                 ],
-                correct: null // CẦN KIỂM TRA - không xác định được đáp án đúng (n_options=1, n_red=0)
+                correct: 0 // CẦN KIỂM TRA - không xác định được đáp án đúng (n_options=1, n_red=0)
             },
             {
                 question: "Câu 44: Phần mềm thảo mãn tính chất nào là phần mềm đảm bảo sự độc lập chức năng thành phần trong chương trình",
                 options: [
-                    "A.  Tính modul",
+                    "A.  Tính modul",
                 ],
-                correct: null // CẦN KIỂM TRA - không xác định được đáp án đúng (n_options=1, n_red=0)
+                correct: 0 // CẦN KIỂM TRA - không xác định được đáp án đúng (n_options=1, n_red=0)
             },
             {
                 question: "Câu 45: Phần mềm đạt tiêu chuẩn sau thì nó thuộc tiêu chuẩn gì? - Có cơ chế ngăn ngừa việc thâm nhập bất hợp pháp vào phần mềm hay dữ liệu và ngăn ngừa việc phát sinh ra những đối tượng (dữ liệu, đơn thể….) sai quy cách hoặc mẫu thuẫn với các đối tượng sẵn có. - Không gây ra nhập nhằng trong thao tác. Đảm bảo nhất quán về cú pháp",
@@ -809,9 +822,9 @@
             {
                 question: "Câu 47: Tài liệu yêu cầu mà nó là tại liệu được cấu trúc mô tả hệ thống các dịch vụ chi tiết hơn là loại tài liệu nào",
                 options: [
-                    "A.  Tài liệu đặc tả yêu cầu",
+                    "A.  Tài liệu đặc tả yêu cầu",
                 ],
-                correct: null // CẦN KIỂM TRA - không xác định được đáp án đúng (n_options=1, n_red=0)
+                correct: 0 // CẦN KIỂM TRA - không xác định được đáp án đúng (n_options=1, n_red=0)
             },
             {
                 question: "Câu 48. Tiêu chuẩn đánh giá chất lượng của một thiết kế kiến trúc phải dựa vào :",
@@ -961,7 +974,7 @@
                     "C. Cho phép các nhà quản lý ước tính chi phí và thời gian thực hiện",
                     "D. Xác định được lợi nhuận thu được trước khi đấu thầu dự án",
                 ],
-                correct: null // CẦN KIỂM TRA - không xác định được đáp án đúng (n_options=4, n_red=0)
+                correct: 2 // CẦN KIỂM TRA - không xác định được đáp án đúng (n_options=4, n_red=0)
             },
             {
                 question: "Câu 13: Tính khả thi của phần mềm dựa vào các yếu tố nào sau?",
@@ -971,7 +984,7 @@
                     "C. Công nghệ, tiền bạc, thời gian và tài nguyên",
                     "D. Kỹ năng và năng lực của các nhà phát triển",
                 ],
-                correct: null // CẦN KIỂM TRA - không xác định được đáp án đúng (n_options=4, n_red=0)
+                correct: 2 // CẦN KIỂM TRA - không xác định được đáp án đúng (n_options=4, n_red=0)
             },
             {
                 question: "Câu 14: Trong công ty tuyển dụng có người rất giỏi đồ họa vào tham gia dự án. Nếu bạn là người tiếp nhận nhân sự này. Bạn sắp xếp vào bộ phận nào?",
@@ -981,13 +994,17 @@
                     "C. Lập trình",
                     "D. Kiểm thử",
                 ],
-                correct: null // CẦN KIỂM TRA - không xác định được đáp án đúng (n_options=4, n_red=0)
+                correct: 1 // CẦN KIỂM TRA - không xác định được đáp án đúng (n_options=4, n_red=0)
             },
             {
                 question: "Câu 15: Trong sơ đồ lựa chọn phương án cho một dự án phát triển phần mềm, đánh giá các phương án không nhất thiết phải chọn tiêu chuẩn đánh giá nào?",
                 options: [
+                    "A. Hiệu năng",
+                    "B. Hiệu quả",
+                    "C. Chi phí vòng đời",
+                    "D. Mô hình phát triển phần mềm",
                 ],
-                correct: null // CẦN KIỂM TRA - không xác định được đáp án đúng (n_options=0, n_red=0)
+                correct: 3 // CẦN KIỂM TRA - không xác định được đáp án đúng (n_options=0, n_red=0)
             },
             {
                 question: "Câu 16: Điền vào chỗ trống: Trước khi lập kế hoạch dự án, cần phải thiết lập.................",
@@ -1114,9 +1131,9 @@
             {
                 question: "Câu 50: Một bổ sung cần thiết nhằm biến đổi hay ánh xạ giao dịch để tạo 1 thiết kế kiến trúc đầy đủ",
                 options: [
-                    "A.  Mô tả việc xử lý cho chuỗi module",
+                    "A.  Mô tả việc xử lý cho chuỗi module",
                 ],
-                correct: null // CẦN KIỂM TRA - không xác định được đáp án đúng (n_options=1, n_red=0)
+                correct: 0 // CẦN KIỂM TRA - không xác định được đáp án đúng (n_options=1, n_red=0)
             },
             {
                 question: "Câu 7: Khi luồng thông tin trong một đoạn của sơ đồ luồng dữ liệu thể hiện bằng một mục đơn mà bẩy một luồng dữ liệu khác theo một trong nhiều đường sẽ thể hiện:",
@@ -1146,7 +1163,7 @@
                     "C. Hiểu rõ hệ thống phần cứng đang sử dụng của khách hàng",
                     "D. Hiểu rõ hiệu quả của việc sử dụng phần mềm",
                 ],
-                correct: null // CẦN KIỂM TRA - không xác định được đáp án đúng (n_options=4, n_red=0)
+                correct: 1 // CẦN KIỂM TRA - không xác định được đáp án đúng (n_options=4, n_red=0)
             },
             {
                 question: "Câu 10: Kết quả của giai đoạn xác định yêu cầu phần mềm là:",
@@ -1181,8 +1198,12 @@
             {
                 question: "Câu 12: Chức năng nào không phải là 1 trong 4 loại chức năng chính ứng với 4 loại nghiệp vụ thông dụng trong các lĩnh vực:",
                 options: [
+                    "A. Chức năng Lưu trữ",
+                    "B. Chức năng Tra cứu",
+                    "C. Chức năng Sắp xếp",
+                    "D. Chức năng tính toán",
                 ],
-                correct: null // CẦN KIỂM TRA - không xác định được đáp án đúng (n_options=0, n_red=0)
+                correct: 2 // CẦN KIỂM TRA - không xác định được đáp án đúng (n_options=0, n_red=0)
             },
             {
                 question: "Câu 13: Phát biểu nào sau đây không thể hiện quy tắc vàng \"Giảm thiểu việc ghi nhớ của người dùng\"?",
@@ -1592,7 +1613,7 @@
                     "C. Đặc biệt quan trọng bởi vì thiếu nó ta có thể phân tích ứng dụng sai",
                     "D. Đặc biệt quan trọng bởi vì thiếu nó ta có thể cài đặt ứng dụng sai",
                 ],
-                correct: 0 // A
+                correct: 1 // A
             },
 
             // ===== CHƯƠNG 4: THIẾT KẾ PHẦN MỀM =====
@@ -1609,8 +1630,12 @@
             {
                 question: "Câu 2: Trong ba giai đoạn: thiết kế, cài đặt và bảo trì thì giai đoạn nào là giai đoạn quan trọng nhất, chịu trách nhiệm đến 80% đối với sự thành công của một sản phẩm:",
                 options: [
+                    "A. Giai đoạn thiết kế",
+                    "B. Giai đoạn cài đặt",
+                    "C. Giai đoạn bảo trì",
+                    "D. Giai đoạn kiểm thử",
                 ],
-                correct: null // CẦN KIỂM TRA - không xác định được đáp án đúng (n_options=0, n_red=0)
+                correct: 0 // CẦN KIỂM TRA - không xác định được đáp án đúng (n_options=0, n_red=0)
             },
             {
                 question: "Câu 3: Nhiệm vụ của giai đoạn nào trong các giai đoạn thiết kế, cài đặt, kiểm thử, bảo trì là chuyển đổi những yêu cầu của hệ thống (kết quả của quá trình phân tích) sang dạng biểu diễn của hệ thống phần mềm:",
@@ -1795,8 +1820,12 @@
             {
                 question: "Câu 12: Kết quả của việc thiết kế phần mềm không có bản thiết kế về:",
                 options: [
+                    "A. Thành phần giao diện",
+                    "B. Thành phần xử lý",
+                    "C. Thành phần dữ liệu",
+                    "D. Thành phần tiến trình",
                 ],
-                correct: null // CẦN KIỂM TRA - không xác định được đáp án đúng (n_options=0, n_red=0)
+                correct: 3 // D
             },
             {
                 question: "Câu 13: Bản thiết kế thành phần giao diện bao gồm:",
@@ -1826,7 +1855,7 @@
                     "C. Dùng làm phương tiện liên lạc giữa các nhóm",
                     "D. Cung cấp thông tin cho những người bảo trì hệ thống",
                 ],
-                correct: null // CẦN KIỂM TRA - không xác định được đáp án đúng (n_options=4, n_red=0)
+                correct: 0 // CẦN KIỂM TRA - không xác định được đáp án đúng (n_options=4, n_red=0)
             },
             {
                 question: "Câu 15. Mục đích của tham chiếu chéo những yêu cầu (ma trận) trong tài liệu thiết kế là nhằm:",
@@ -1962,7 +1991,7 @@
                 question: "Câu 22. Đối với tầm quan trọng của giao diện được xét trên hai yếu tố đó là yếu tố nào:",
                 options: [
                     "A. Khía cạnh nghiệp vụ, khía cạnh thương mại",
-                    "B. Khai cạnh nghiệp vụ, khía cạnh hiện đại",
+                    "B. Khía cạnh nghiệp vụ, khía cạnh hiện đại",
                     "C. Khía cạnh thương mại, khía cạnh cổ điển",
                     "D. Khía cạnh cổ điển, khía cạnh ưa nhìn",
                 ],
@@ -2106,7 +2135,7 @@
                     "C. Quản lý lỗi",
                     "D. Thời gian đáp ứng, Năng khiếu thẩm mỹ và kỹ năng đồ họa của người thiết kế giao diện.",
                 ],
-                correct: null // CẦN KIỂM TRA - không xác định được đáp án đúng (n_options=4, n_red=0)
+                correct: 2 // CẦN KIỂM TRA - không xác định được đáp án đúng (n_options=4, n_red=0)
             },
             {
                 question: "Câu 32: Thông báo lỗi nên có tính chất nào sau đây?",
@@ -2381,11 +2410,14 @@
                 correct: 0 // A
             },
             {
-                question: "Câu 7: Việc xây dựng các câu lệnh của chương trình nên tuân theo phong cách lập trình",
+                question: "Câu 7: Việc xây dựng các câu lệnh của chương trình nên tuân theo phong cách lập trình nào: ",
                 options: [
-                    "A. nào:",
+                    "A. Lập trình cấu trúc",
+                    "B. Lập trình hướng đối tượng",
+                    "C. Lập trình logic",
+                    "D. Lập trình mạng",
                 ],
-                correct: null // CẦN KIỂM TRA - không xác định được đáp án đúng (n_options=1, n_red=0)
+                correct: 0 // A
             },
             {
                 question: "Câu 8: Trong thể hiện chương trình, cách xây dựng câu lệnh đơn không nhất thiết phải tuân theo các chỉ dẫn nào?",
@@ -2847,7 +2879,7 @@
                     "C. Các nhà kiểm thử không nên can thiệp vào dự án cho đến khi bắt đầu việc kiểm thử.",
                     "D. Các tranh cãi giữa nhà phát triển phần mềm và các nhà phát triển sẽ giảm.",
                 ],
-                correct: null // CẦN KIỂM TRA - không xác định được đáp án đúng (n_options=4, n_red=0)
+                correct: 1 // CẦN KIỂM TRA - không xác định được đáp án đúng (n_options=4, n_red=0)
             },
             {
                 question: "Câu 13: Verification (xác minh) là:",
@@ -2857,7 +2889,7 @@
                     "C. Kiểm tra xem sản phẩm có tương thích với các ràng buộc của dự án không. Kiểm tra xem sản phẩm có tương thích với mong đợi của khách hàng không,",
                     "D. Kiểm tra xem sản phẩm có tương thích với đặc tả yêu cầu phần mềm không, và kiểm tra xem sản phẩm có tương thích với các ràng buộc của dự án không.",
                 ],
-                correct: null // CẦN KIỂM TRA - không xác định được đáp án đúng (n_options=4, n_red=0)
+                correct: 1 // CẦN KIỂM TRA - không xác định được đáp án đúng (n_options=4, n_red=0)
             },
             {
                 question: "Câu 14: Loại lỗi (error) nào sau đây bị bỏ qua trong kiểm thử hộp đen nhưng có thể được phát hiện trong kiểm thử hộp trắng?",
@@ -2877,7 +2909,7 @@
                     "C. Chọn các đường dẫn kiểm thử dựa vào vị trí tạo và sử dụng biến.",
                     "D. Tập trung vào việc kiểm tra tính hợp lệ của vòng lặp.",
                 ],
-                correct: null // CẦN KIỂM TRA - không xác định được đáp án đúng (n_options=4, n_red=0)
+                correct: 1 // CẦN KIỂM TRA - không xác định được đáp án đúng (n_options=4, n_red=0)
             },
             {
                 question: "Câu 16. Dạng kiểm thử nào sau đây không thuộc kiểm thử hộp đen?",
@@ -3230,34 +3262,54 @@
                 correct: 0 // A
             },
             {
-                question: "Câu 27: Nếu □A□ P □B□ và □B□ Q □C□ thì □A□ P,Q □C□ là nội dung của tiên đề nào:",
+                question: "Câu 27: Nếu {A} P {B} và {B} Q {C} thì {A} P,Q {C} là nội dung của tiên đề nào:",
                 options: [
+                    "A. Tiên dề tuần tự",
+                    "B. Tiên đề gán",
+                    "C. Tiên đề rẽ nhánh",
+                    "D. Tiên đề lặp",
                 ],
-                correct: null // CẦN KIỂM TRA - không xác định được đáp án đúng (n_options=0, n_red=0)
+                correct: 0 // A
             },
             {
-                question: "Câu 28: Điều kiện để có mệnh đề □B□ sau khi thực hiện lệnh gán x: = E (với E là một biểu thức) từ mệnh đề {A} thì trước đó ta phải có {A} suy dẫn được ra {B[x|E]} là nội dung của tiên đề nào:",
+                question: "Câu 28: Điều kiện để có mệnh đề {B} sau khi thực hiện lệnh gán x: = E (với E là một biểu thức) từ mệnh đề {A} thì trước đó ta phải có {A} suy dẫn được ra {B[x|E]} là nội dung của tiên đề nào:",
                 options: [
+                    "A. Tiên dề tuần tự",
+                    "B. Tiên đề gán",
+                    "C. Tiên đề rẽ nhánh",
+                    "D. Tiên đề lặp",
                 ],
-                correct: null // CẦN KIỂM TRA - không xác định được đáp án đúng (n_options=0, n_red=0)
+                correct: 1 // B
             },
             {
-                question: "Câu 29: Với mệnh đề dữ liệu vào {A}, mệnh đề dữ liệu ra {B}, biểu thức logic E, và đoạn trình P. Nếu ta có {A, E}P{B} và □A,!E□□L□=> □B□ thì ta nói rằng mệnh đề {A} và {B} tuân theo cấu trúc rẽ nhánh dạng khuyết với cấu trúc P và điều kiện lựa chọn E; tức là: {A} if E then P; {B} là nội dung của tiên đề nào:",
+                question: "Câu 29: Với mệnh đề dữ liệu vào {A}, mệnh đề dữ liệu ra {B}, biểu thức logic E, và đoạn trình P. Nếu ta có {A, E}P{B} và {A,!E} => {B} thì ta nói rằng mệnh đề {A} và {B} tuân theo cấu trúc rẽ nhánh dạng khuyết với cấu trúc P và điều kiện lựa chọn E; tức là: {A} if E then P; {B} là nội dung của tiên đề nào:",
                 options: [
+                    "A. Tiên dề tuần tự",
+                    "B. Tiên đề gán",
+                    "C. Tiên đề rẽ nhánh",
+                    "D. Tiên đề lặp",
                 ],
-                correct: null // CẦN KIỂM TRA - không xác định được đáp án đúng (n_options=0, n_red=0)
+                correct: 2 // CẦN KIỂM TRA - không xác định được đáp án đúng (n_options=0, n_red=0)
             },
             {
                 question: "Câu 30: Với mệnh đề dữ liệu vào {A}, mệnh đề dữ liệu ra {B}, biểu thức logic E, và các đoạn trình P, Q. Nếu ta có {A, E}P{B} và {A,!E}Q{B} thì ta nói rằng mệnh đề {A} và {B} tuân theo cấu trúc rẽ nhánh dạng đủ với cấu trúc P, Q và điều kiện lựa chọn E; tức là: {A} if E then P else Q; {B} là nội dung của tiên đề nào:",
                 options: [
+                    "A. Tiên dề tuần tự",
+                    "B. Tiên đề gán",
+                    "C. Tiên đề rẽ nhánh",
+                    "D. Tiên đề lặp",
                 ],
-                correct: null // CẦN KIỂM TRA - không xác định được đáp án đúng (n_options=0, n_red=0)
+                correct: 2 // CẦN KIỂM TRA - không xác định được đáp án đúng (n_options=0, n_red=0)
             },
             {
                 question: "Câu 31: Cho mệnh đề dữ liệu vào {A}, biểu thức logic E và đoạn trình P. Nếu mệnh đề {A} tuân theo cấu trúc lặp P với điều kiện lặp E thì mệnh đề {A} sẽ bất biến đối với P trong điều kiện E, tức là {A,E}P{A}, kết thúc vòng lặp ta có mệnh đề {A,!E}. Lúc này ta viết: {A} while E do P; {A,!E} là nội dung của tiên đề nào?",
                 options: [
+                    "A. Tiên dề tuần tự",
+                    "B. Tiên đề gán",
+                    "C. Tiên đề rẽ nhánh",
+                    "D. Tiên đề lặp",
                 ],
-                correct: null // CẦN KIỂM TRA - không xác định được đáp án đúng (n_options=0, n_red=0)
+                correct: 3 // D
             },
             {
                 question: "Câu 32: Cho mệnh đề dữ liệu vào {A} và đoạn trình P. Nếu ta có {A}P{A} thì ta nói rằng tính chất dữ liệu của mệnh đề {A} không thay đổi khi chịu sự tác động của đoạn trình P và lúc này người ta nói rằng mệnh đề {A} là bất biến đối với P, tức ta có: {A}P {A}. là nội dung của tiên đề nào?",
@@ -3287,7 +3339,7 @@
                     "C. QE",
                     "D. QI",
                 ],
-                correct: 0 // A
+                correct: 1 // B
             },
             {
                 question: "Câu 35: Cho bản đặc tả yêu cầu: Cho nhập m, n. Xuất giá trị ra màn hình (m - n)^3 Nếu nhập 10, 7 thì kết quả là 27 Xuất ra màn hình: Nhập: 10, 7 lấy 7^3 Trừ 10 với kết quả trên. Xuất ra: -333 Kết quả xuất ra sai -333 chứ không phải là 27 trên đây gọi là:",
@@ -3297,7 +3349,7 @@
                     "C. Failure",
                     "D. Error",
                 ],
-                correct: null // CẦN KIỂM TRA - không xác định được đáp án đúng (n_options=4, n_red=0)
+                correct: 2 // CẦN KIỂM TRA - không xác định được đáp án đúng (n_options=4, n_red=0)
             },
 
             // ===== CHƯƠNG 7: BẢO TRÌ PHẦN MỀM VÀ QUẢN LÝ THAY ĐỔI PHẦN MỀM =====
@@ -3539,7 +3591,7 @@
                     "C. Thích ứng với các loại phần cứng, phần mềm, tính năng hệ thống,…khác nhau có thể được sử dụng.",
                     "D. Tiến hóa phần mềm.",
                 ],
-                correct: null // CẦN KIỂM TRA - không xác định được đáp án đúng (n_options=4, n_red=0)
+                correct: 0 // CẦN KIỂM TRA - không xác định được đáp án đúng (n_options=4, n_red=0)
             },
             {
                 question: "Câu 16: Đâu không phải là đặc điểm chính trong các hoạt động của người bảo trì:",
@@ -3609,7 +3661,7 @@
                     "C. Nhóm tập trung",
                     "D. Tất cả đều đúng",
                 ],
-                correct: 1 // B
+                correct: 3 // D
             },
             {
                 question: "Câu 23. Tính độ phức tạp của thuật toán trong đoạn giải thuật sau: a = 2; b = 3; for (x=2; x<=n; x++) { a = a + x; b = b * a; }",
@@ -3699,7 +3751,7 @@
                     "C. Hầu hết các ngôn ngữ lập trình là có các tiện ích tự động để phát hiện và xử lý bất thường về mặt giải thuật cũng như lỗi cú pháp. (sai)",
                     "D. Hầu hết các ngôn ngữ lập trình là đều có các tiện ích tự động để phát hiện và xử lý bất thường về mặt giải thuật, cú pháp và giao diện.",
                 ],
-                correct: null // CẦN KIỂM TRA - không xác định được đáp án đúng (n_options=4, n_red=0)
+                correct: 0 // CẦN KIỂM TRA - không xác định được đáp án đúng (n_options=4, n_red=0)
             },
             {
                 question: "Câu 32. Trong dự án phát triển ứng dụng thương mại điện tử, thành phần nào sau đây không thể tái sử dụng?",
