@@ -3847,16 +3847,44 @@
             const isLast = currentQuestion === quizData.length - 1;
 
             // Xây dựng nút điều hướng (Chỉ hiện khi đã trả lời)
-            let actionBtnHtml = '';
-            if (isCurrentAnswered) {
-                if (isLast) {
-                    actionBtnHtml = `<button onclick="submitQuiz()" class="bg-yellow-400 text-black font-bold border-2 border-black brutal-shadow-sm brutal-hover brutal-active px-8 py-3 text-lg pop-in uppercase tracking-wider">Xem Điểm</button>`;
-                } else {
-                    actionBtnHtml = `<button onclick="goNext()" class="bg-blue-400 text-black font-bold border-2 border-black brutal-shadow-sm brutal-hover brutal-active px-8 py-3 text-lg pop-in uppercase tracking-wider">Tiếp Theo ➔</button>`;
+            // let actionBtnHtml = '';
+            // if (isCurrentAnswered) {
+            //     if (isLast) {
+            //         actionBtnHtml = `<button onclick="submitQuiz()" class="bg-yellow-400 text-black font-bold border-2 border-black brutal-shadow-sm brutal-hover brutal-active px-8 py-3 text-lg pop-in uppercase tracking-wider">Xem Điểm</button>`;
+            //     } else {
+            //         actionBtnHtml = `<button onclick="goNext()" class="bg-blue-400 text-black font-bold border-2 border-black brutal-shadow-sm brutal-hover brutal-active px-8 py-3 text-lg pop-in uppercase tracking-wider">Tiếp Theo ➔</button>`;
+            //     }
+            // } else {
+            //     actionBtnHtml = `<div class="text-gray-500 font-medium italic pop-in">Hãy chọn một đáp án...</div>`;
+            // }
+            let actionBtnHtml = `
+    <div class="flex gap-3">
+        ${currentQuestion > 0
+                    ? `<button onclick="goBack()"
+                class="bg-gray-300 text-black font-bold border-2 border-black brutal-shadow-sm brutal-hover brutal-active px-6 py-3">
+                ⬅ Back
+            </button>`
+                    : ''
                 }
-            } else {
-                actionBtnHtml = `<div class="text-gray-500 font-medium italic pop-in">Hãy chọn một đáp án...</div>`;
-            }
+
+        ${isCurrentAnswered
+                    ? (
+                        isLast
+                            ? `<button onclick="submitQuiz()"
+                        class="bg-yellow-400 text-black font-bold border-2 border-black brutal-shadow-sm brutal-hover brutal-active px-8 py-3">
+                        Xem Điểm
+                    </button>`
+                            : `<button onclick="goNext()"
+                        class="bg-blue-400 text-black font-bold border-2 border-black brutal-shadow-sm brutal-hover brutal-active px-8 py-3">
+                        Next ➡
+                    </button>`
+                    )
+                    : `<div class="text-gray-500 font-medium italic flex items-center px-3">
+                    Hãy chọn một đáp án...
+                </div>`
+                }
+    </div>
+`;
 
             appElement.innerHTML = `
                 <div>
@@ -3893,19 +3921,55 @@
             `;
         }
 
+        // window.selectOption = function (index) {
+        //     // Không cho chọn lại nếu đã trả lời
+        //     if (isCurrentAnswered) return;
+
+        //     selectedAnswers[currentQuestion] = index;
+        //     isCurrentAnswered = true;
+
+        //     // Tính điểm nếu đúng
+        //     if (index === quizData[currentQuestion].correct) {
+        //         score++;
+        //     }
+
+        //     render();
+        // };
+
+
         window.selectOption = function (index) {
-            // Không cho chọn lại nếu đã trả lời
-            if (isCurrentAnswered) return;
+            const oldAnswer = selectedAnswers[currentQuestion];
+
+            if (oldAnswer !== null) {
+                if (oldAnswer === quizData[currentQuestion].correct) {
+                    score--;
+                }
+            }
 
             selectedAnswers[currentQuestion] = index;
-            isCurrentAnswered = true;
 
-            // Tính điểm nếu đúng
             if (index === quizData[currentQuestion].correct) {
                 score++;
             }
 
+            isCurrentAnswered = true;
+
             render();
+        };
+
+
+
+
+        window.goBack = function () {
+            if (currentQuestion > 0) {
+                currentQuestion--;
+
+                // Nếu câu trước đã trả lời thì giữ trạng thái
+                isCurrentAnswered =
+                    selectedAnswers[currentQuestion] !== null;
+
+                render();
+            }
         };
 
         window.goNext = function () {
