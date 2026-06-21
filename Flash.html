@@ -19,7 +19,6 @@
             }
         }
     </script>
-    <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <style>
         /* Đảm bảo tuyệt đối mọi thành phần đều vuông vức */
@@ -73,6 +72,39 @@
             transform: translate(2px, 2px);
             box-shadow: 2px 2px 0px 0px rgba(0, 0, 0, 1);
         }
+
+        /* Hiệu ứng rung lắc chúc mừng cute */
+        @keyframes tada {
+            0% {
+                transform: scale(1);
+            }
+
+            10%,
+            20% {
+                transform: scale(0.9) rotate(-2deg);
+            }
+
+            30%,
+            50%,
+            70%,
+            90% {
+                transform: scale(1.05) rotate(2deg);
+            }
+
+            40%,
+            60%,
+            80% {
+                transform: scale(1.05) rotate(-2deg);
+            }
+
+            100% {
+                transform: scale(1) rotate(0);
+            }
+        }
+
+        .animate-tada {
+            animation: tada 0.5s;
+        }
     </style>
 </head>
 
@@ -94,10 +126,10 @@
                 <span class="text-red-600 dark:text-red-400">Sai: <span id="statWrong">0</span></span>
             </div> -->
             <div id="statsTooltip"
-                class="hidden bg-white dark:bg-darkCard dark:text-white text-black border-2 border-black brutal-shadow-sm px-4 py-2 font-bold items-center gap-4">
+                class="hidden flex-wrap bg-white dark:bg-darkCard dark:text-white text-black border-2 border-black brutal-shadow-sm px-4 py-2 font-bold items-center gap-4 text-sm sm:text-base">
                 <span class="text-green-600 dark:text-green-400">Đúng: <span id="statCorrect">0</span></span>
                 <span class="text-red-600 dark:text-red-400">Sai: <span id="statWrong">0</span></span>
-                <span class="text-orange-500 flex items-center gap-1">🔥 Chuỗi: <span id="statStreak">0</span></span>
+                <span class="text-orange-500 flex items-center gap-1">Chuỗi: <span id="statStreak">0</span></span>
             </div>
         </div>
     </div>
@@ -151,7 +183,7 @@
     <script>
         // --- HỆ THỐNG ÂM THANH (Web Audio API) ---
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        
+
         function playSound(type) {
             if (audioCtx.state === 'suspended') audioCtx.resume();
             const osc = audioCtx.createOscillator();
@@ -242,7 +274,7 @@
                         "C. Cài đặt cứng trong sản phẩm",
                         "D. Là PM có mã nguồn được cung cấp miễn phí. Việc sử dụng phải tuân theo giấy phép sử dụng kèm theo mã nguồn",
                     ],
-                    correct: 1 
+                    correct: 1
                 },
                 {
                     question: "Câu 3. Phần mềm thế giới thực là phần mềm:",
@@ -766,7 +798,7 @@
                         "C. Các giao diện",
                         "D. Thuật giải",
                     ],
-                    correct: 3 
+                    correct: 3
                 },
                 {
                     question: "Câu 32: Phần mềm thỏa mãn tính bảo mật là phần mềm: Phân quyền người dùng, mã hoá thông tin, mã hoá password, tránh các xâm nhập",
@@ -4221,12 +4253,12 @@
                 osc.frequency.value = freq;
                 osc.connect(gain);
                 gain.connect(audioCtx.destination);
-                
+
                 // Hiệu ứng fade in/out cho từng nốt nhạc
                 gain.gain.setValueAtTime(0, audioCtx.currentTime + i * 0.08);
                 gain.gain.linearRampToValueAtTime(0.2, audioCtx.currentTime + i * 0.08 + 0.02);
                 gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + i * 0.08 + 0.1);
-                
+
                 osc.start(audioCtx.currentTime + i * 0.08);
                 osc.stop(audioCtx.currentTime + i * 0.08 + 0.1);
             });
@@ -4240,14 +4272,14 @@
             osc.type = 'triangle'; // Âm thanh hơi chói nhẹ
             osc.connect(gain);
             gain.connect(audioCtx.destination);
-            
+
             // Hiệu ứng trượt cao độ đi xuống (Womp womp womp...)
             osc.frequency.setValueAtTime(400, audioCtx.currentTime);
-            osc.frequency.exponentialRampToValueAtTime(150, audioCtx.currentTime + 0.6); 
-            
+            osc.frequency.exponentialRampToValueAtTime(150, audioCtx.currentTime + 0.6);
+
             gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
             gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.6);
-            
+
             osc.start();
             osc.stop(audioCtx.currentTime + 0.6);
         }
@@ -4260,7 +4292,7 @@
             // Bắn pháo hoa rực rỡ từ 2 bên
             confetti(Object.assign({}, defaults, { particleCount: particleRatio, origin: { x: 0.2, y: 0.8 } }));
             confetti(Object.assign({}, defaults, { particleCount: particleRatio, origin: { x: 0.8, y: 0.8 } }));
-            
+
             // Thêm các icon vui nhộn bay lên
             confetti({
                 particleCount: 15,
@@ -4300,20 +4332,20 @@
             if (index === q.correct) {
                 statCorrectCount++;
                 currentStreak++; // Tăng chuỗi
-                
+
                 // Logic hiệu ứng
                 if (currentStreak >= 3) {
                     playStreakSound(); // Âm thanh chúc mừng Mario
                     fireCuteConfetti(); // Bắn pháo hoa
                     // Hiệu ứng rung nhẹ màn hình cho thêm phần kịch tính
-                    appElement.classList.add('animate-bounce');
-                    setTimeout(() => appElement.classList.remove('animate-bounce'), 500);
+                    appElement.classList.add('animate-tada');
+                    setTimeout(() => appElement.classList.remove('animate-tada'), 500);
                 } else {
                     playSound('correct'); // Tiếng ting bình thường
                 }
             } else {
                 statWrongCount++;
-                
+
                 // Logic mất chuỗi
                 if (currentStreak >= 3) {
                     playSadSound(); // Âm thanh tịu nghỉu
