@@ -19,6 +19,8 @@
             }
         }
     </script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <style>
         /* Đảm bảo tuyệt đối mọi thành phần đều vuông vức */
         * {
@@ -86,10 +88,16 @@
                 class="bg-[#ff90e8] text-black border-2 border-black brutal-shadow-sm brutal-hover brutal-active px-4 py-2 font-bold flex items-center gap-2">
                 Thống kê
             </button>
+            <!-- <div id="statsTooltip"
+                class="hidden bg-white dark:bg-darkCard dark:text-white text-black border-2 border-black brutal-shadow-sm px-4 py-2 font-bold items-center gap-4">
+                <span class="text-green-600 dark:text-green-400">Đúng: <span id="statCorrect">0</span></span>
+                <span class="text-red-600 dark:text-red-400">Sai: <span id="statWrong">0</span></span>
+            </div> -->
             <div id="statsTooltip"
                 class="hidden bg-white dark:bg-darkCard dark:text-white text-black border-2 border-black brutal-shadow-sm px-4 py-2 font-bold items-center gap-4">
                 <span class="text-green-600 dark:text-green-400">Đúng: <span id="statCorrect">0</span></span>
                 <span class="text-red-600 dark:text-red-400">Sai: <span id="statWrong">0</span></span>
+                <span class="text-orange-500 flex items-center gap-1">🔥 Chuỗi: <span id="statStreak">0</span></span>
             </div>
         </div>
     </div>
@@ -143,6 +151,7 @@
     <script>
         // --- HỆ THỐNG ÂM THANH (Web Audio API) ---
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        
         function playSound(type) {
             if (audioCtx.state === 'suspended') audioCtx.resume();
             const osc = audioCtx.createOscillator();
@@ -226,24 +235,14 @@
                     correct: 0 // CẦN KIỂM TRA - không xác định được đáp án đúng (n_options=1, n_red=0)
                 },
                 {
-                    question: "Câu 5: Phần mềm dạng sản phẩm là phần mềm:",
+                    question: "Câu 2. Phần mềm dạng sản phẩm là phần mềm:",
                     options: [
                         "A. Phục vụ cho các phần mềm khác",
                         "B. Cung cấp chức năng đặc biệt được dùng bởi cộng đồng lớn như PM xử lý văn bản, bảng tính, đồ họa, multimedia, giải trí,...",
                         "C. Cài đặt cứng trong sản phẩm",
                         "D. Là PM có mã nguồn được cung cấp miễn phí. Việc sử dụng phải tuân theo giấy phép sử dụng kèm theo mã nguồn",
                     ],
-                    correct: 1 // B
-                },
-                {
-                    question: "Câu 2. Phần mềm dòng sản phẩm là phần mềm:",
-                    options: [
-                        "A. Phục vụ cho các phần mềm khác",
-                        "B. Cung cấp chức năng đặc biệt được dùng bởi cộng đồng lớn như PM xử lý văn bản, bảng tính, đồ họa, multimedia, giải trí,...",
-                        "C. Cài đặt cứng trong sản phẩm",
-                        "D. Là PM có mã nguồn được cung cấp miễn phí. Việc sử dụng phải tuân theo giấy phép sử dụng kèm theo mã nguồn",
-                    ],
-                    correct: 0 
+                    correct: 1 
                 },
                 {
                     question: "Câu 3. Phần mềm thế giới thực là phần mềm:",
@@ -4064,6 +4063,7 @@
 
             statCorrectCount = 0;
             statWrongCount = 0;
+            currentStreak = 0; // Thêm dòng này để reset chuỗi khi bắt đầu lượt mới
             updateStatsUI();
 
             secondsElapsed = 0;
@@ -4091,6 +4091,7 @@
         function updateStatsUI() {
             document.getElementById('statCorrect').innerText = statCorrectCount;
             document.getElementById('statWrong').innerText = statWrongCount;
+            document.getElementById('statStreak').innerText = currentStreak; // Cập nhật số streak lên UI
         }
 
         function toggleDarkMode(isDark) {
@@ -4205,6 +4206,90 @@
             `;
         }
 
+        // --- TRẠNG THÁI CHUỖI ---
+        let currentStreak = 0;
+
+        // --- ÂM THANH CHUỖI LIÊN TIẾP (CUTE, VUI NHỘN) ---
+        function playStreakSound() {
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            // Tạo hợp âm tăng dần (nghe như tiếng level up trong game Mario)
+            const notes = [523.25, 659.25, 783.99, 1046.50]; // Đô, Mi, Sol, Đô (C5, E5, G5, C6)
+            notes.forEach((freq, i) => {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'sine'; // Âm tròn, cute
+                osc.frequency.value = freq;
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                
+                // Hiệu ứng fade in/out cho từng nốt nhạc
+                gain.gain.setValueAtTime(0, audioCtx.currentTime + i * 0.08);
+                gain.gain.linearRampToValueAtTime(0.2, audioCtx.currentTime + i * 0.08 + 0.02);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + i * 0.08 + 0.1);
+                
+                osc.start(audioCtx.currentTime + i * 0.08);
+                osc.stop(audioCtx.currentTime + i * 0.08 + 0.1);
+            });
+        }
+
+        // --- ÂM THANH MẤT CHUỖI (BUỒN BÃ, TỊU NGHỈU) ---
+        function playSadSound() {
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = 'triangle'; // Âm thanh hơi chói nhẹ
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            
+            // Hiệu ứng trượt cao độ đi xuống (Womp womp womp...)
+            osc.frequency.setValueAtTime(400, audioCtx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(150, audioCtx.currentTime + 0.6); 
+            
+            gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.6);
+            
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.6);
+        }
+
+        // --- HIỆU ỨNG HÌNH ẢNH (BẮN PHÁO HOA + ICON) ---
+        function fireCuteConfetti() {
+            const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
+            const particleRatio = 50;
+
+            // Bắn pháo hoa rực rỡ từ 2 bên
+            confetti(Object.assign({}, defaults, { particleCount: particleRatio, origin: { x: 0.2, y: 0.8 } }));
+            confetti(Object.assign({}, defaults, { particleCount: particleRatio, origin: { x: 0.8, y: 0.8 } }));
+            
+            // Thêm các icon vui nhộn bay lên
+            confetti({
+                particleCount: 15,
+                scalar: 2,
+                spread: 100,
+                origin: { y: 0.6 },
+                shapes: ['circle'],
+                colors: ['#ff90e8', '#ffeb3b', '#00e676'],
+            });
+        }
+
+        // window.selectOption = function (index) {
+        //     if (isCurrentAnswered) return;
+
+        //     const q = activeQuizData[currentQuestion];
+        //     selectedAnswers[currentQuestion] = index;
+        //     isCurrentAnswered = true;
+
+        //     if (index === q.correct) {
+        //         playSound('correct');
+        //         statCorrectCount++;
+        //     } else {
+        //         playSound('wrong');
+        //         statWrongCount++;
+        //     }
+
+        //     updateStatsUI();
+        //     render();
+        // };
         window.selectOption = function (index) {
             if (isCurrentAnswered) return;
 
@@ -4213,11 +4298,30 @@
             isCurrentAnswered = true;
 
             if (index === q.correct) {
-                playSound('correct');
                 statCorrectCount++;
+                currentStreak++; // Tăng chuỗi
+                
+                // Logic hiệu ứng
+                if (currentStreak >= 3) {
+                    playStreakSound(); // Âm thanh chúc mừng Mario
+                    fireCuteConfetti(); // Bắn pháo hoa
+                    // Hiệu ứng rung nhẹ màn hình cho thêm phần kịch tính
+                    appElement.classList.add('animate-bounce');
+                    setTimeout(() => appElement.classList.remove('animate-bounce'), 500);
+                } else {
+                    playSound('correct'); // Tiếng ting bình thường
+                }
             } else {
-                playSound('wrong');
                 statWrongCount++;
+                
+                // Logic mất chuỗi
+                if (currentStreak >= 3) {
+                    playSadSound(); // Âm thanh tịu nghỉu
+                    currentStreak = 0; // Reset chuỗi
+                } else {
+                    playSound('wrong'); // Tiếng tít sai bình thường
+                    currentStreak = 0; // Reset chuỗi
+                }
             }
 
             updateStatsUI();
