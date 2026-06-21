@@ -3857,32 +3857,58 @@
             // } else {
             //     actionBtnHtml = `<div class="text-gray-500 font-medium italic pop-in">Hãy chọn một đáp án...</div>`;
             // }
+            //             let actionBtnHtml = `
+            //     <div class="flex gap-3">
+            //         ${currentQuestion > 0
+            //                     ? `<button onclick="goBack()"
+            //                 class="bg-gray-300 text-black font-bold border-2 border-black brutal-shadow-sm brutal-hover brutal-active px-6 py-3">
+            //                 ⬅ Back
+            //             </button>`
+            //                     : ''
+            //                 }
+
+            //         ${isCurrentAnswered
+            //                     ? (
+            //                         isLast
+            //                             ? `<button onclick="submitQuiz()"
+            //                         class="bg-yellow-400 text-black font-bold border-2 border-black brutal-shadow-sm brutal-hover brutal-active px-8 py-3">
+            //                         Xem Điểm
+            //                     </button>`
+            //                             : `<button onclick="goNext()"
+            //                         class="bg-blue-400 text-black font-bold border-2 border-black brutal-shadow-sm brutal-hover brutal-active px-8 py-3">
+            //                         Next ➡
+            //                     </button>`
+            //                     )
+            //                     : `<div class="text-gray-500 font-medium italic flex items-center px-3">
+            //                     Hãy chọn một đáp án...
+            //                 </div>`
+            //                 }
+            //     </div>
+            // `;
+
+
             let actionBtnHtml = `
     <div class="flex gap-3">
+
         ${currentQuestion > 0
                     ? `<button onclick="goBack()"
                 class="bg-gray-300 text-black font-bold border-2 border-black brutal-shadow-sm brutal-hover brutal-active px-6 py-3">
-                ⬅ Back
+                Back
             </button>`
                     : ''
                 }
 
-        ${isCurrentAnswered
-                    ? (
-                        isLast
-                            ? `<button onclick="submitQuiz()"
-                        class="bg-yellow-400 text-black font-bold border-2 border-black brutal-shadow-sm brutal-hover brutal-active px-8 py-3">
-                        Xem Điểm
-                    </button>`
-                            : `<button onclick="goNext()"
-                        class="bg-blue-400 text-black font-bold border-2 border-black brutal-shadow-sm brutal-hover brutal-active px-8 py-3">
-                        Next ➡
-                    </button>`
-                    )
-                    : `<div class="text-gray-500 font-medium italic flex items-center px-3">
-                    Hãy chọn một đáp án...
-                </div>`
+        ${isLast
+                    ? `<button onclick="submitQuiz()"
+                class="bg-yellow-400 text-black font-bold border-2 border-black brutal-shadow-sm brutal-hover brutal-active px-8 py-3">
+                Xem Điểm
+            </button>`
+                    : `<button onclick="goNext()"
+                class="bg-blue-400 text-black font-bold border-2 border-black brutal-shadow-sm brutal-hover brutal-active px-8 py-3">
+                Next
+            </button>`
                 }
+
     </div>
 `;
 
@@ -3961,10 +3987,19 @@
 
 
         window.goBack = function () {
+            // if (currentQuestion > 0) {
+            //     currentQuestion--;
+
+            //     // Nếu câu trước đã trả lời thì giữ trạng thái
+            //     isCurrentAnswered =
+            //         selectedAnswers[currentQuestion] !== null;
+
+            //     render();
+            // }
+
             if (currentQuestion > 0) {
                 currentQuestion--;
 
-                // Nếu câu trước đã trả lời thì giữ trạng thái
                 isCurrentAnswered =
                     selectedAnswers[currentQuestion] !== null;
 
@@ -3973,9 +4008,17 @@
         };
 
         window.goNext = function () {
+            // if (currentQuestion < quizData.length - 1) {
+            //     currentQuestion++;
+            //     isCurrentAnswered = false; // Reset trạng thái cho câu mới
+            //     render();
+            // }
             if (currentQuestion < quizData.length - 1) {
                 currentQuestion++;
-                isCurrentAnswered = false; // Reset trạng thái cho câu mới
+
+                isCurrentAnswered =
+                    selectedAnswers[currentQuestion] !== null;
+
                 render();
             }
         };
