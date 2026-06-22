@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="vi" class="light">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Ôn Tập</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        darkBg: '#1a202c',
+                        darkCard: '#2d3748',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Pháo hoa confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <style>
+        * { border-radius: 0 !important; }
+
+        body {
+            background-color: #f0f4f8;
+            background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
+            background-size: 20px 20px;
+            transition: background-color 0.3s ease;
+        }
+
+        .dark body {
+            background-color: #1a202c;
+            background-image: radial-gradient(#4a5568 1px, transparent 1px);
+        }
+
+        /* Hiệu ứng xuất hiện */
+        .pop-in {
+            animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+        @keyframes popIn {
+            0%   { transform: scale(0.95); opacity: 0; }
+            100% { transform: scale(1);    opacity: 1; }
+        }
+
+        /* Neubrutalism shadow */
+        .brutal-shadow    { box-shadow: 6px 6px 0px 0px rgba(0,0,0,1); }
+        .brutal-shadow-sm { box-shadow: 4px 4px 0px 0px rgba(0,0,0,1); }
+
+        .brutal-hover:hover:not(.disabled) {
+            transform: translate(-2px, -2px);
+            box-shadow: 6px 6px 0px 0px rgba(0,0,0,1);
+        }
+        .brutal-active:active:not(.disabled) {
+            transform: translate(2px, 2px);
+            box-shadow: 2px 2px 0px 0px rgba(0,0,0,1);
+        }
+
+        /* Hiệu ứng rung khi streak */
+        @keyframes tada {
+            0%          { transform: scale(1); }
+            10%, 20%    { transform: scale(0.9) rotate(-2deg); }
+            30%,50%,70%,90% { transform: scale(1.05) rotate(2deg); }
+            40%,60%,80% { transform: scale(1.05) rotate(-2deg); }
+            100%        { transform: scale(1) rotate(0); }
+        }
+        .animate-tada { animation: tada 0.5s; }
+    </style>
+</head>
+
+<body class="text-gray-900 dark:text-gray-100 p-4 md:p-8 font-sans min-h-screen flex flex-col items-center">
+
+    <!-- ════════════════════════════════════════
+         THANH TRÊN: TIMER + THỐNG KÊ
+    ════════════════════════════════════════ -->
+    <div class="w-full max-w-4xl flex flex-wrap justify-between items-center mb-4 gap-4 pop-in">
+        <div class="flex gap-4 items-center">
+
+            <!-- Timer -->
+            <div class="bg-white dark:bg-darkCard border-2 border-black brutal-shadow-sm px-4 py-2 font-bold text-xl flex items-center gap-2">
+                <span id="timerDisplay">00:00</span>
+            </div>
+
+            <!-- Nút thống kê -->
+            <button onclick="toggleStats()"
+                class="bg-[#ff90e8] text-black border-2 border-black brutal-shadow-sm brutal-hover brutal-active px-4 py-2 font-bold flex items-center gap-2">
+                Thống kê
+            </button>
+
+            <!-- Panel thống kê (ẩn mặc định) -->
+            <div id="statsTooltip"
+                class="hidden flex-wrap bg-white dark:bg-darkCard dark:text-white text-black border-2 border-black brutal-shadow-sm px-4 py-2 font-bold items-center gap-4 text-sm sm:text-base">
+                <span class="text-green-600 dark:text-green-400">Đúng: <span id="statCorrect">0</span></span>
+                <span class="text-red-600 dark:text-red-400">Sai: <span id="statWrong">0</span></span>
+                <span class="text-orange-500 flex items-center gap-1">Chuỗi: <span id="statStreak">0</span></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ════════════════════════════════════════
+         BẢNG ĐIỀU KHIỂN
+    ════════════════════════════════════════ -->
+    <div class="w-full max-w-4xl bg-blue-100 dark:bg-teal-900 border-4 border-black brutal-shadow p-4 md:p-6 mb-8 pop-in">
+
+        <div class="flex flex-wrap justify-between items-center border-b-2 border-black dark:border-white pb-3">
+            <h3 class="font-bold text-xl uppercase tracking-wider text-black dark:text-white">Bảng Điều Khiển</h3>
+
+            <div class="flex flex-wrap gap-2 items-center mt-2 sm:mt-0">
+                <!-- Nút thu/mở trên mobile -->
+                <button onclick="toggleControlPanel()" id="togglePanelBtn"
+                    class="md:hidden bg-[#ff90e8] text-black font-bold border-2 border-black px-3 py-1 brutal-shadow-sm brutal-hover brutal-active text-sm">
+                    Thu nhỏ
+                </button>
+
+                <!-- Toggle dark mode -->
+                <label class="flex items-center gap-2 cursor-pointer text-black dark:text-white font-bold bg-white dark:bg-gray-800 border-2 border-black px-3 py-1 brutal-shadow-sm brutal-hover text-sm sm:text-base">
+                    <input type="checkbox" id="darkModeToggle"
+                        class="w-4 h-4 sm:w-5 sm:h-5 border-2 border-black accent-black"
+                        onchange="toggleDarkMode(this.checked)">
+                    Giao diện Tối
+                </label>
+            </div>
+        </div>
+
+        <div id="controlPanelContent" class="flex flex-col md:flex-row gap-6 mt-4">
+
+            <!-- Cột trái: Nguồn dữ liệu + Chương -->
+            <div class="flex-grow">
+
+                <!-- Upload file câu hỏi -->
+                <h4 class="font-bold mb-2 text-black dark:text-white">Nguồn dữ liệu câu hỏi:</h4>
+                <div class="flex flex-wrap items-center gap-3 mb-1">
+                    <label class="bg-white dark:bg-gray-800 text-black dark:text-white font-bold border-2 border-black px-3 py-2 brutal-shadow-sm brutal-hover cursor-pointer text-sm sm:text-base">
+                        📂 Chọn file câu hỏi (.js / .json)
+                        <input type="file" accept=".js,.json,application/json,text/javascript" class="hidden"
+                            onchange="handleQuestionFileUpload(this)">
+                    </label>
+                </div>
+                <p id="dataSourceStatus" class="text-sm font-bold text-black dark:text-white mb-4">Đang tải...</p>
+
+                <!-- Hướng dẫn nhanh -->
+                <details class="mb-4 border-2 border-black bg-white dark:bg-gray-800 px-3 py-2 brutal-shadow-sm text-sm text-black dark:text-white">
+                    <summary class="font-bold cursor-pointer">📖 Hướng dẫn tạo file câu hỏi</summary>
+                    <div class="mt-2 space-y-1 leading-relaxed">
+                        <p>1. Tải file mẫu <code class="bg-yellow-200 text-black px-1">questions.js</code> về máy.</p>
+                        <p>2. Mở bằng Notepad / VS Code, điền câu hỏi theo cấu trúc có sẵn.</p>
+                        <p>3. Lưu lại, rồi bấm <strong>"Chọn file câu hỏi"</strong> ở trên để nạp vào.</p>
+                        <p class="text-gray-500">Cũng hỗ trợ file <code class="bg-yellow-200 text-black px-1">.json</code> nếu muốn.</p>
+                    </div>
+                </details>
+
+                <!-- Chọn chương -->
+                <h4 class="font-bold mb-3 text-black dark:text-white">Nội dung ôn tập:</h4>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-3" id="chapterCheckboxes">
+                    <p class="col-span-4 text-sm text-gray-500 dark:text-gray-400 italic">Chưa có dữ liệu…</p>
+                </div>
+            </div>
+
+            <!-- Cột phải: Tùy chọn + Nút Áp dụng -->
+            <div class="flex flex-col justify-end gap-3 min-w-[200px]">
+                <label class="flex items-center gap-2 cursor-pointer text-black dark:text-white font-bold bg-white dark:bg-gray-800 border-2 border-black p-2 brutal-shadow-sm brutal-hover">
+                    <input type="checkbox" id="randomToggle" class="w-5 h-5 border-2 border-black accent-blue-500" checked>
+                    Trộn ngẫu nhiên
+                </label>
+                <button onclick="playSound('click'); applySettings()"
+                    class="bg-yellow-400 text-black font-bold border-2 border-black brutal-shadow-sm brutal-hover brutal-active py-3 px-4 uppercase tracking-wider">
+                    ▶ Áp Dụng
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ════════════════════════════════════════
+         KHU VỰC HIỂN THỊ QUIZ
+    ════════════════════════════════════════ -->
+    <div id="app" class="w-full max-w-4xl flex-grow flex items-center justify-center"></div>
+
+    <!-- ════════════════════════════════════════
+         LOAD LOGIC TỪ app.js
+    ════════════════════════════════════════ -->
+    <script src="app.js"></script>
+
+</body>
+</html>
