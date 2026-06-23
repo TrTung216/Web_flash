@@ -141,6 +141,11 @@
                         <input type="file" accept=".js,.json,application/json,text/javascript" class="hidden"
                             onchange="handleQuestionFileUpload(this)">
                     </label>
+                    <label class="bg-white dark:bg-gray-800 text-black dark:text-white font-bold border-2 border-black px-3 py-2 brutal-shadow-sm brutal-hover cursor-pointer text-sm sm:text-base">
+                        📄 Chọn file Word (.docx)
+                        <input type="file" accept=".docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document" class="hidden"
+                            onchange="handleDocxFileUpload(this)">
+                    </label>
                 </div>
                 <p id="dataSourceStatus" class="text-sm font-bold text-black dark:text-white mb-4">Đang tải...</p>
 
@@ -182,10 +187,13 @@
     ════════════════════════════════════════ -->
     <div id="app" class="w-full max-w-4xl flex-grow flex items-center justify-center"></div>
 
-    <!-- ════════════════════════════════════════
-         LOAD LOGIC TỪ app.js
-    ════════════════════════════════════════ -->
-    <script src="app.js"></script>
+        <!-- Thư viện client-side để đọc .docx (mammoth.js) -->
+        <script src="https://unpkg.com/mammoth/mammoth.browser.min.js"></script>
+
+        <!-- ════════════════════════════════════════
+            LOAD LOGIC TỪ app.js
+        ════════════════════════════════════════ -->
+        <script src="app.js"></script>
 
 </body>
 </html>

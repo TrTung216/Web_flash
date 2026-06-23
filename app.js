@@ -114,6 +114,35 @@ function loadQuizData(data, sourceLabel) {
         return false;
     }
 
+    // Chuẩn hoá các câu hỏi: đảm bảo `options` là mảng, `chapter` là số (mặc định 1), `correct` là chỉ số số nguyên
+    questions = questions.map(orig => {
+        const q = Object.assign({}, orig);
+        if (!Array.isArray(q.options)) {
+            if (typeof q.options === 'string') {
+                q.options = q.options.split(/\r?\n/).map(s => s.trim()).filter(Boolean);
+            } else {
+                q.options = [];
+            }
+        }
+        const n = parseInt(q.chapter, 10);
+        q.chapter = isNaN(n) ? 1 : n;
+
+        if (typeof q.correct === 'string') {
+            const s = q.correct.trim().toUpperCase();
+            if (/^[A-D]$/.test(s)) q.correct = {'A':0,'B':1,'C':2,'D':3}[s];
+            else {
+                const ci = parseInt(s, 10);
+                q.correct = isNaN(ci) ? 0 : ci;
+            }
+        } else if (typeof q.correct !== 'number') {
+            q.correct = 0;
+        }
+
+        if (q.options.length === 0) q.correct = -1;
+        if (q.correct < 0 || q.correct >= q.options.length) q.correct = q.options.length > 0 ? 0 : -1;
+        return q;
+    });
+
     rawQuizData = questions;
     chapterNames = names;
     renderChapterCheckboxes();
@@ -184,6 +213,122 @@ window.handleQuestionFileUpload = function (fileInputEl) {
     };
     reader.readAsText(file);
 };
+
+// Xử lý upload file .docx (Word) client-side bằng mammoth.js
+window.handleDocxFileUpload = function (fileInputEl) {
+    const file = fileInputEl.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function (e) {
+        const arrayBuffer = e.target.result;
+        if (typeof mammoth === 'undefined') {
+            alert('Thư viện đọc .docx chưa tải xong. Vui lòng thử lại sau.');
+            return;
+        }
+        mammoth.convertToHtml({ arrayBuffer: arrayBuffer })
+            .then(result => {
+                const html = result.value;
+                const parsed = parseDocxHtmlToQuizData(html);
+                if (!parsed || parsed.length === 0) {
+                    alert('Không tìm thấy câu hỏi trong file .docx. Hãy kiểm tra định dạng (số câu, phương án A./B.).');
+                    return;
+                }
+                loadQuizData(parsed, file.name + ' (docx)');
+                playSound('correct');
+            })
+            .catch(err => {
+                alert('Lỗi khi chuyển .docx: ' + (err && err.message ? err.message : err));
+            });
+    };
+    reader.readAsArrayBuffer(file);
+};
+
+function parseDocxHtmlToQuizData(html) {
+    const wrapper = document.createElement('div');
+    wrapper.innerHTML = html;
+    const paras = Array.from(wrapper.querySelectorAll('p, li'));
+    const lines = [];
+    paras.forEach(p => {
+        const parts = p.innerHTML.split(/<br\s*\/?/i);
+        parts.forEach(part => {
+            const text = part.replace(/<[^>]+>/g, '').trim();
+            if (text) lines.push({ text: text, html: part });
+        });
+    });
+
+    const questions = [];
+    let cur = null;
+
+    function pushCur() {
+        if (!cur) return;
+        const opts = cur.options.filter(Boolean);
+        if (opts.length === 0) { cur = null; return; }
+        if (cur.correct === -1) {
+            const star = opts.findIndex(o => /^\*/.test(o) || /\(đúng\)|✅/i.test(o));
+            cur.correct = star !== -1 ? star : 0;
+        }
+        questions.push({ question: cur.question.trim(), options: opts, correct: cur.correct, chapter: 1 });
+        cur = null;
+    }
+
+    for (const ln of lines) {
+        const line = ln.text;
+        const htmlPart = ln.html;
+        if (!line) continue;
+        const qMatch = line.match(/^\s*(?:Câu\s*)?(\d+)\s*[\.\)\-:]\s*(.+)$/i);
+        if (qMatch) {
+            pushCur();
+            cur = { question: qMatch[2].trim(), options: [], correct: -1 };
+            continue;
+        }
+        const optMatch = line.match(/^\s*([A-D])\s*[\.\)\-:]\s*(.+)$/i);
+        if (optMatch && cur) {
+            const idx = { 'A': 0, 'B': 1, 'C': 2, 'D': 3 }[optMatch[1].toUpperCase()];
+            const txt = optMatch[2].trim().replace(/^\*/, '').trim();
+            cur.options[idx] = txt;
+            if (/<strong|<b|font-weight:\s*700/i.test(htmlPart)) cur.correct = idx;
+            continue;
+        }
+        const ansMatch = line.match(/(?:Đáp án|Đáp|Answer|Correct|Đúng)[:\s]*([A-D]|\d+)/i);
+        if (ansMatch && cur) {
+            const a = ansMatch[1];
+            let idx;
+            if (/[A-D]/i.test(a)) idx = { 'A': 0, 'B': 1, 'C': 2, 'D': 3 }[a.toUpperCase()];
+            else idx = parseInt(a, 10) - 1;
+            if (!isNaN(idx)) cur.correct = idx;
+            continue;
+        }
+        if (cur) {
+            const bullet = line.match(/^[\-\•\*]\s*(.+)$/);
+            if (bullet) {
+                const nextIdx = cur.options.findIndex(o => !o);
+                const i = nextIdx === -1 ? cur.options.length : nextIdx;
+                cur.options[i] = bullet[1].trim();
+                if (/<strong|<b|font-weight:\s*700/i.test(htmlPart)) cur.correct = i;
+                continue;
+            }
+            if (cur.options.length === 0) {
+                cur.question += ' ' + line;
+            } else {
+                const last = cur.options.length - 1;
+                cur.options[last] = (cur.options[last] + ' ' + line).trim();
+            }
+            continue;
+        }
+        if (line.endsWith('?')) {
+            pushCur();
+            cur = { question: line.trim(), options: [], correct: -1 };
+            continue;
+        }
+    }
+
+    pushCur();
+    return questions.map(q => {
+        const opts = q.options || [];
+        const correct = (typeof q.correct === 'number' && q.correct >= 0 && q.correct < opts.length) ? q.correct : 0;
+        return { question: q.question, options: opts, correct: correct, chapter: 1 };
+    });
+}
 
 // ─────────────────────────────────────────────────────
 // STATE CỦA APP
