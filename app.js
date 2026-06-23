@@ -3,6 +3,15 @@
  * ===================================
  * File này xử lý toàn bộ state, render UI, và tương tác người dùng.
  * Không cần chỉnh sửa file này khi chỉ muốn thay đổi câu hỏi.
+ *
+ * Lưu ý: Phần đọc file .docx KHÔNG dùng mammoth.js nữa. Mammoth khi convert
+ * sang HTML sẽ làm mất thông tin màu chữ (font color), nên không thể nhận
+ * diện đáp án đúng được tô màu đỏ trong Word -> mọi câu bị fallback về đáp án A.
+ * Thay vào đó, ta đọc trực tiếp word/document.xml bên trong file .docx (dùng
+ * JSZip) để lấy đúng giá trị màu/định dạng của từng đoạn chữ.
+ *
+ * Cần thêm script JSZip vào file HTML (trước app.js):
+ *   <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
  */
 
 // ─────────────────────────────────────────────────────
@@ -246,19 +255,14 @@ async function convertDocxToColoredHtml(arrayBuffer) {
         return r >= 120 && r >= g + 50 && r >= b + 50;
     }
 
+    function escapeHtml(s) {
+        return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+
     paragraphs.forEach(p => {
         const runs = Array.from(p.getElementsByTagNameNS(NS, 'r'));
         let paraHtml = '';
         runs.forEach(r => {
-            const texts = Array.from(r.getElementsByTagNameNS(NS, 't'));
-            let runText = texts.map(t => t.textContent).join('');
-
-            if (!runText) {
-                if (r.getElementsByTagNameNS(NS, 'br').length > 0) paraHtml += '<br>';
-                return;
-            }
-            runText = runText.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-
             const rPr = r.getElementsByTagNameNS(NS, 'rPr')[0];
             let isRed = false, isBold = false;
             if (rPr) {
@@ -279,9 +283,25 @@ async function convertDocxToColoredHtml(arrayBuffer) {
                 }
             }
 
-            if (isRed) paraHtml += `<span style="color:#FF0000">${runText}</span>`;
-            else if (isBold) paraHtml += `<strong>${runText}</strong>`;
-            else paraHtml += runText;
+            // QUAN TRỌNG: một <w:r> có thể chứa NHIỀU node con xen kẽ theo thứ tự,
+            // ví dụ <w:t>text1</w:t><w:br/><w:t>text2</w:t> (rất phổ biến khi gõ
+            // Shift+Enter giữa các đáp án trong cùng 1 đoạn). Cách cũ gom hết
+            // <w:t> lại rồi mới xét <w:br/> riêng nên bị MẤT dấu xuống dòng,
+            // khiến 2 đáp án dính liền thành 1 dòng. Giờ xử lý đúng thứ tự xuất hiện.
+            Array.from(r.childNodes).forEach(node => {
+                const tag = node.localName;
+                if (tag === 't') {
+                    const text = escapeHtml(node.textContent || '');
+                    if (!text) return;
+                    if (isRed) paraHtml += `<span style="color:#FF0000">${text}</span>`;
+                    else if (isBold) paraHtml += `<strong>${text}</strong>`;
+                    else paraHtml += text;
+                } else if (tag === 'br' || tag === 'cr') {
+                    paraHtml += '<br>';
+                } else if (tag === 'tab') {
+                    paraHtml += '\t';
+                }
+            });
         });
         htmlParts.push(`<p>${paraHtml}</p>`);
     });
@@ -413,6 +433,82 @@ function parseDocxHtmlToQuizData(html) {
         return false;
     }
 
+    /**
+     * Lấy ra các đoạn chữ được tô màu đỏ trong một đoạn HTML (dùng để xác định
+     * đáp án đúng khi nhiều đáp án bị dính chung trên 1 dòng — xem hàm
+     * explodeInlineOptionMarkers bên dưới).
+     */
+    function getRedTextSnippets(htmlFragment) {
+        if (!htmlFragment) return [];
+        const snippets = [];
+        try {
+            const tmp = document.createElement('div');
+            tmp.innerHTML = htmlFragment;
+            const elems = tmp.querySelectorAll('*');
+            elems.forEach(el => {
+                let isRed = false;
+                const styleAttr = el.getAttribute && el.getAttribute('style');
+                if (styleAttr) {
+                    const pieces = styleAttr.split(';');
+                    for (let piece of pieces) {
+                        const kv = piece.split(':');
+                        if (kv.length < 2) continue;
+                        const key = kv[0].trim().toLowerCase();
+                        const value = kv.slice(1).join(':').trim();
+                        if ((key === 'color' || key === 'background-color') && isRedishColorString(value)) isRed = true;
+                    }
+                }
+                if (el.tagName && el.tagName.toLowerCase() === 'font') {
+                    const c = el.getAttribute('color');
+                    if (c && isRedishColorString(c)) isRed = true;
+                }
+                if (isRed) {
+                    const text = el.textContent.trim();
+                    if (text) snippets.push(text);
+                }
+            });
+        } catch (err) {}
+        return snippets;
+    }
+
+    /**
+     * Tách một dòng có thể chứa NHIỀU đáp án dính liền nhau, ví dụ:
+     *   "Sinh viên b. Giáo vụ c. Giáo viên d. Quản trị mạng"
+     * Trường hợp này thường xảy ra khi đáp án trong Word được trình bày theo
+     * dạng bảng/cột hoặc dùng tab để dàn hàng (a. ... [tab] b. ... [tab] ...),
+     * và khi đọc XML thì các tab/khoảng cách giữa cột chỉ còn lại 1 khoảng trắng
+     * nên 4 đáp án bị dính lại thành 1 dòng duy nhất.
+     * Nếu tìm thấy từ 2 mốc "x. " (x = a/b/c/d, không phân biệt hoa thường) trở
+     * lên NẰM TRONG dòng, tách dòng đó thành nhiều đáp án riêng. Phần trước mốc
+     * đầu tiên (nếu có) được coi là đáp án đầu tiên (thường là "a." bị thiếu
+     * tiền tố vì dùng numbering tự động của Word, không phải text gõ tay).
+     */
+    function explodeInlineOptionMarkers(line) {
+        const re = /(^|\s)([a-dA-D])([.)])\s+/g;
+        const markers = [];
+        let m;
+        while ((m = re.exec(line)) !== null) {
+            const letterPos = m.index + m[1].length;
+            markers.push(letterPos);
+        }
+        // markers.length === 0: dòng không có mốc đáp án nào -> không tách.
+        // markers.length === 1 và mốc nằm ngay đầu dòng (markers[0] === 0): đây là
+        // dạng 1 đáp án bình thường trên 1 dòng, không cần tách -> không tách.
+        if (markers.length === 0) return [line];
+        const chunks = [];
+        if (markers[0] > 0) {
+            const head = line.slice(0, markers[0]).trim();
+            if (head) chunks.push(head);
+        }
+        for (let i = 0; i < markers.length; i++) {
+            const start = markers[i];
+            const end = (i + 1 < markers.length) ? markers[i + 1] : line.length;
+            const chunk = line.slice(start, end).trim();
+            if (chunk) chunks.push(chunk);
+        }
+        return chunks;
+    }
+
     function pushCur() {
         if (!cur) return;
         const opts = cur.options.filter(Boolean);
@@ -435,6 +531,39 @@ function parseDocxHtmlToQuizData(html) {
             cur = { question: qMatch[2].trim(), options: [], correct: -1 };
             continue;
         }
+
+        // Xử lý trường hợp nhiều đáp án dính liền trên CÙNG MỘT DÒNG
+        // (xem giải thích chi tiết ở hàm explodeInlineOptionMarkers).
+        if (cur) {
+            const inlineChunks = explodeInlineOptionMarkers(line);
+            if (inlineChunks.length > 1) {
+                const redSnippets = getRedTextSnippets(htmlPart);
+                const hasExistingOptions = cur.options.filter(Boolean).length > 0;
+                inlineChunks.forEach((chunk, ci) => {
+                    const om = chunk.match(/^\s*([A-D])\s*[\.\)\-:]\s*(.+)$/i);
+                    const isRedChunk = redSnippets.some(s => chunk.includes(s) || s.includes(chunk));
+                    if (om) {
+                        const idx = { 'A': 0, 'B': 1, 'C': 2, 'D': 3 }[om[1].toUpperCase()];
+                        const txt = om[2].trim().replace(/^\*/, '').trim();
+                        cur.options[idx] = txt;
+                        if (isRedChunk) cur.correct = idx;
+                    } else if (hasExistingOptions || chunk.length <= 60) {
+                        // Đoạn không có tiền tố chữ (thường là đáp án đầu tiên "a." bị
+                        // mất tiền tố do dùng numbering tự động của Word). Chỉ coi đây
+                        // là đáp án khi đã có đáp án khác trước đó, hoặc đoạn này khá
+                        // ngắn — để tránh nuốt nhầm phần đầu của 1 câu hỏi dài nhiều dòng.
+                        const idx = ci;
+                        if (!cur.options[idx]) cur.options[idx] = chunk;
+                        if (isRedChunk) cur.correct = idx;
+                    } else {
+                        // Có thể vẫn là phần tiếp theo của câu hỏi (câu dài, nhiều dòng)
+                        cur.question += ' ' + chunk;
+                    }
+                });
+                continue;
+            }
+        }
+
         const optMatch = line.match(/^\s*([A-D])\s*[\.\)\-:]\s*(.+)$/i);
         if (optMatch && cur) {
             const idx = { 'A': 0, 'B': 1, 'C': 2, 'D': 3 }[optMatch[1].toUpperCase()];

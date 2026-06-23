@@ -150,13 +150,47 @@
                 <p id="dataSourceStatus" class="text-sm font-bold text-black dark:text-white mb-4">Đang tải...</p>
 
                 <!-- Hướng dẫn nhanh -->
-                <details class="mb-4 border-2 border-black bg-white dark:bg-gray-800 px-3 py-2 brutal-shadow-sm text-sm text-black dark:text-white">
-                    <summary class="font-bold cursor-pointer">📖 Hướng dẫn tạo file câu hỏi</summary>
+                <details class="mb-2 border-2 border-black bg-white dark:bg-gray-800 px-3 py-2 brutal-shadow-sm text-sm text-black dark:text-white">
+                    <summary class="font-bold cursor-pointer">📖 Hướng dẫn tạo file câu hỏi (.js / .json)</summary>
                     <div class="mt-2 space-y-1 leading-relaxed">
                         <p>1. Tải file mẫu <code class="bg-yellow-200 text-black px-1">questions.js</code> về máy.</p>
                         <p>2. Mở bằng Notepad / VS Code, điền câu hỏi theo cấu trúc có sẵn.</p>
                         <p>3. Lưu lại, rồi bấm <strong>"Chọn file câu hỏi"</strong> ở trên để nạp vào.</p>
                         <p class="text-gray-500">Cũng hỗ trợ file <code class="bg-yellow-200 text-black px-1">.json</code> nếu muốn.</p>
+                    </div>
+                </details>
+
+                <!-- Hướng dẫn định dạng file Word .docx -->
+                <details class="mb-4 border-2 border-black bg-white dark:bg-gray-800 px-3 py-2 brutal-shadow-sm text-sm text-black dark:text-white">
+                    <summary class="font-bold cursor-pointer">📄 Cách định dạng file Word (.docx) để app đọc đúng</summary>
+                    <div class="mt-2 space-y-2 leading-relaxed">
+                        <p>App đọc trực tiếp nội dung Word, áp dụng đúng các quy tắc sau để tránh bị <strong>dính đáp án</strong> hoặc <strong>sai đáp án đúng</strong>:</p>
+
+                        <p class="font-bold mt-2">1. Đánh số câu hỏi</p>
+                        <p>Mỗi câu hỏi bắt đầu bằng <code class="bg-yellow-200 text-black px-1">Câu 1:</code>, <code class="bg-yellow-200 text-black px-1">Câu 2.</code>... (có hoặc không có chữ "Câu" đều được, miễn có số + dấu <code class="bg-yellow-200 text-black px-1">. ) -</code> theo sau).</p>
+
+                        <p class="font-bold mt-2">2. Mỗi đáp án PHẢI nằm trên 1 dòng riêng</p>
+                        <p>Dùng phím <strong>Enter</strong> (xuống dòng đoạn mới) giữa các đáp án — <span class="text-red-600 dark:text-red-400 font-bold">không</span> dùng Tab hoặc bảng (table) để xếp đáp án thành nhiều cột trên cùng 1 dòng, vì khi đọc file app sẽ không phân biệt được ranh giới giữa các đáp án.</p>
+                        <p>✅ Đúng:</p>
+                        <pre class="bg-gray-100 dark:bg-gray-900 p-2 text-xs overflow-x-auto">Câu 1: Thủ đô của Việt Nam là gì?
+a. Hà Nội
+b. Hồ Chí Minh
+c. Đà Nẵng
+d. Huế</pre>
+                        <p>❌ Sai (4 đáp án xếp thành bảng/cột trên cùng dòng):</p>
+                        <pre class="bg-gray-100 dark:bg-gray-900 p-2 text-xs overflow-x-auto">a. Hà Nội        b. Hồ Chí Minh
+c. Đà Nẵng        d. Huế</pre>
+
+                        <p class="font-bold mt-2">3. Mỗi đáp án nên có tiền tố chữ rõ ràng</p>
+                        <p>Gõ trực tiếp <code class="bg-yellow-200 text-black px-1">a.</code>, <code class="bg-yellow-200 text-black px-1">b.</code>, <code class="bg-yellow-200 text-black px-1">c.</code>, <code class="bg-yellow-200 text-black px-1">d.</code> (hoặc viết hoa <code class="bg-yellow-200 text-black px-1">A. B. C. D.</code>) như chữ thường, <span class="text-red-600 dark:text-red-400 font-bold">không</span> dùng tính năng đánh số tự động (Bullets & Numbering) của Word, vì app chỉ đọc được chữ thật đã gõ, không đọc được số/chữ do Word tự sinh ra.</p>
+
+                        <p class="font-bold mt-2">4. Đáp án đúng: tô màu chữ ĐỎ</p>
+                        <p>Bôi đen toàn bộ đáp án đúng (cả chữ tiền tố <code class="bg-yellow-200 text-black px-1">a./b./c./d.</code> và nội dung) rồi đổi <strong>màu chữ (Font Color)</strong> thành màu đỏ. App nhận diện theo màu chữ, không cần tô đậm hay tô vàng.</p>
+
+                        <p class="font-bold mt-2">5. Chỉ 1 đáp án đúng cho mỗi câu</p>
+                        <p>Nếu vô tình tô đỏ nhiều hơn 1 đáp án trong cùng 1 câu, app sẽ lấy đáp án đỏ <strong>cuối cùng</strong> đọc được làm đáp án đúng.</p>
+
+                        <p class="text-gray-500 mt-2">💡 Sau khi nạp file .docx, hãy kiểm tra lại vài câu đầu trong khu vực quiz để chắc chắn đáp án không bị dính và đáp án đúng được khoanh đúng màu xanh.</p>
                     </div>
                 </details>
 
