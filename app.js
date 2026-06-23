@@ -214,31 +214,100 @@ window.handleQuestionFileUpload = function (fileInputEl) {
     reader.readAsText(file);
 };
 
-// Xử lý upload file .docx (Word) client-side bằng mammoth.js
+// ─────────────────────────────────────────────────────
+// ĐỌC FILE .DOCX (Word) — đọc trực tiếp XML để giữ đúng màu chữ
+// ─────────────────────────────────────────────────────
+
+/**
+ * Đọc word/document.xml trong file .docx (dùng JSZip) và dựng lại thành HTML
+ * đơn giản, có giữ lại <span style="color:#FF0000"> cho chữ màu đỏ và
+ * <strong> cho chữ in đậm — để parseDocxHtmlToQuizData() nhận diện đáp án đúng.
+ */
+async function convertDocxToColoredHtml(arrayBuffer) {
+    if (typeof JSZip === 'undefined') {
+        throw new Error('Thiếu thư viện JSZip (cần để đọc đúng màu chữ trong .docx). Hãy thêm script JSZip vào trang HTML.');
+    }
+    const zip = await JSZip.loadAsync(arrayBuffer);
+    const xmlFile = zip.file('word/document.xml');
+    if (!xmlFile) throw new Error('Không tìm thấy word/document.xml trong file .docx.');
+    const xmlText = await xmlFile.async('text');
+    const xmlDoc = new DOMParser().parseFromString(xmlText, 'application/xml');
+
+    const NS = 'http://schemas.openxmlformats.org/wordprocessingml/2006/main';
+    const paragraphs = Array.from(xmlDoc.getElementsByTagNameNS(NS, 'p'));
+    const htmlParts = [];
+
+    function isRedHex(hex) {
+        if (!hex || hex.toUpperCase() === 'AUTO') return false;
+        const r = parseInt(hex.substr(0, 2), 16);
+        const g = parseInt(hex.substr(2, 2), 16);
+        const b = parseInt(hex.substr(4, 2), 16);
+        if (isNaN(r) || isNaN(g) || isNaN(b)) return false;
+        return r >= 120 && r >= g + 50 && r >= b + 50;
+    }
+
+    paragraphs.forEach(p => {
+        const runs = Array.from(p.getElementsByTagNameNS(NS, 'r'));
+        let paraHtml = '';
+        runs.forEach(r => {
+            const texts = Array.from(r.getElementsByTagNameNS(NS, 't'));
+            let runText = texts.map(t => t.textContent).join('');
+
+            if (!runText) {
+                if (r.getElementsByTagNameNS(NS, 'br').length > 0) paraHtml += '<br>';
+                return;
+            }
+            runText = runText.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+            const rPr = r.getElementsByTagNameNS(NS, 'rPr')[0];
+            let isRed = false, isBold = false;
+            if (rPr) {
+                const colorEl = rPr.getElementsByTagNameNS(NS, 'color')[0];
+                if (colorEl) {
+                    const val = colorEl.getAttributeNS(NS, 'val') || colorEl.getAttribute('w:val');
+                    if (isRedHex(val)) isRed = true;
+                }
+                const hlEl = rPr.getElementsByTagNameNS(NS, 'highlight')[0];
+                if (hlEl) {
+                    const hv = (hlEl.getAttributeNS(NS, 'val') || hlEl.getAttribute('w:val') || '').toLowerCase();
+                    if (hv === 'red') isRed = true;
+                }
+                const bEl = rPr.getElementsByTagNameNS(NS, 'b')[0];
+                if (bEl) {
+                    const bv = bEl.getAttributeNS(NS, 'val') || bEl.getAttribute('w:val');
+                    if (bv !== '0' && bv !== 'false') isBold = true;
+                }
+            }
+
+            if (isRed) paraHtml += `<span style="color:#FF0000">${runText}</span>`;
+            else if (isBold) paraHtml += `<strong>${runText}</strong>`;
+            else paraHtml += runText;
+        });
+        htmlParts.push(`<p>${paraHtml}</p>`);
+    });
+
+    return htmlParts.join('\n');
+}
+
+// Xử lý upload file .docx (Word) client-side — đọc XML trực tiếp để giữ đúng màu đáp án
 window.handleDocxFileUpload = function (fileInputEl) {
     const file = fileInputEl.files[0];
     if (!file) return;
     const reader = new FileReader();
-    reader.onload = function (e) {
-        const arrayBuffer = e.target.result;
-        if (typeof mammoth === 'undefined') {
-            alert('Thư viện đọc .docx chưa tải xong. Vui lòng thử lại sau.');
-            return;
+    reader.onload = async function (e) {
+        try {
+            const arrayBuffer = e.target.result;
+            const html = await convertDocxToColoredHtml(arrayBuffer);
+            const parsed = parseDocxHtmlToQuizData(html);
+            if (!parsed || parsed.length === 0) {
+                alert('Không tìm thấy câu hỏi trong file .docx. Hãy kiểm tra định dạng (số câu, phương án A./B.).');
+                return;
+            }
+            loadQuizData(parsed, file.name + ' (docx)');
+            playSound('correct');
+        } catch (err) {
+            alert('Lỗi khi đọc .docx: ' + (err && err.message ? err.message : err));
         }
-        mammoth.convertToHtml({ arrayBuffer: arrayBuffer })
-            .then(result => {
-                const html = result.value;
-                const parsed = parseDocxHtmlToQuizData(html);
-                if (!parsed || parsed.length === 0) {
-                    alert('Không tìm thấy câu hỏi trong file .docx. Hãy kiểm tra định dạng (số câu, phương án A./B.).');
-                    return;
-                }
-                loadQuizData(parsed, file.name + ' (docx)');
-                playSound('correct');
-            })
-            .catch(err => {
-                alert('Lỗi khi chuyển .docx: ' + (err && err.message ? err.message : err));
-            });
     };
     reader.readAsArrayBuffer(file);
 };
@@ -255,9 +324,94 @@ function parseDocxHtmlToQuizData(html) {
             if (text) lines.push({ text: text, html: part });
         });
     });
-
     const questions = [];
     let cur = null;
+
+    function isRedishColorString(str) {
+        if (!str) return false;
+        str = String(str).trim().toLowerCase();
+        str = str.split('!')[0].trim(); // remove !important
+        if (!str) return false;
+        if (/\bred\b/i.test(str)) return true;
+        // rgb/rgba(...) -> check numeric components
+        let m = str.match(/rgba?\s*\(\s*([0-9]{1,3})\s*[, ]\s*([0-9]{1,3})\s*[, ]\s*([0-9]{1,3})/i);
+        if (m) {
+            const r = parseInt(m[1], 10), g = parseInt(m[2], 10), b = parseInt(m[3], 10);
+            if (isNaN(r) || isNaN(g) || isNaN(b)) return false;
+            if (r >= 120 && r >= g + 50 && r >= b + 50) return true;
+            if (r >= 150 && g < 120 && b < 120) return true;
+            return false;
+        }
+        // hex colors #f00 or #ff0000
+        m = str.match(/^#([0-9a-f]{3}|[0-9a-f]{6})$/i);
+        if (m) {
+            let hex = m[1];
+            if (hex.length === 3) hex = hex.split('').map(ch => ch + ch).join('');
+            const r = parseInt(hex.substr(0, 2), 16);
+            const g = parseInt(hex.substr(2, 2), 16);
+            const b = parseInt(hex.substr(4, 2), 16);
+            if (r >= 120 && r >= g + 50 && r >= b + 50) return true;
+            if (r >= 150 && g < 120 && b < 120) return true;
+            return false;
+        }
+        return false;
+    }
+
+    function htmlIndicatesCorrect(htmlFragment) {
+        if (!htmlFragment) return false;
+        if (/(?:<strong\b|<b\b|font-weight\s*:\s*(?:bold|700))/i.test(htmlFragment)) return true;
+        try {
+            const tmp = document.createElement('div');
+            tmp.innerHTML = htmlFragment;
+            const elems = tmp.querySelectorAll('*');
+            for (const el of elems) {
+                const styleAttr = el.getAttribute && el.getAttribute('style');
+                if (styleAttr) {
+                    const pieces = styleAttr.split(';');
+                    for (let piece of pieces) {
+                        const kv = piece.split(':');
+                        if (kv.length < 2) continue;
+                        const key = kv[0].trim().toLowerCase();
+                        const value = kv.slice(1).join(':').trim();
+                        if ((key === 'color' || key === 'background-color' || key === 'background' || key === 'fill') && isRedishColorString(value)) return true;
+                    }
+                }
+
+                try {
+                    const inlineColor = (el.style && (el.style.color || el.style.backgroundColor || el.style.background));
+                    if (inlineColor && isRedishColorString(inlineColor)) return true;
+                } catch (e) {}
+
+                if (el.tagName && el.tagName.toLowerCase() === 'font') {
+                    const c = el.getAttribute('color');
+                    if (c && isRedishColorString(c)) return true;
+                }
+            }
+        } catch (err) {}
+
+        const styleAttrMatch = htmlFragment.match(/style\s*=\s*['\"]([^'\"]+)['\"]/i);
+        if (styleAttrMatch) {
+            const styleText = styleAttrMatch[1];
+            const pieces = styleText.split(';');
+            for (let piece of pieces) {
+                const kv = piece.split(':');
+                if (kv.length < 2) continue;
+                const key = kv[0].trim().toLowerCase();
+                const value = kv.slice(1).join(':').trim();
+                if ((key === 'color' || key === 'background-color' || key === 'background') && isRedishColorString(value)) return true;
+            }
+        }
+        const fontMatch = htmlFragment.match(/<font[^>]*\scolor\s*=\s*['\"]?([^'\"\s>]+)/i);
+        if (fontMatch && isRedishColorString(fontMatch[1])) return true;
+        const colorOccur = htmlFragment.match(/(?:color|background-color)\s*:\s*([^;"'<>]+)/ig);
+        if (colorOccur) {
+            for (const occ of colorOccur) {
+                const val = occ.split(':').slice(1).join(':').trim();
+                if (isRedishColorString(val)) return true;
+            }
+        }
+        return false;
+    }
 
     function pushCur() {
         if (!cur) return;
@@ -286,7 +440,7 @@ function parseDocxHtmlToQuizData(html) {
             const idx = { 'A': 0, 'B': 1, 'C': 2, 'D': 3 }[optMatch[1].toUpperCase()];
             const txt = optMatch[2].trim().replace(/^\*/, '').trim();
             cur.options[idx] = txt;
-            if (/<strong|<b|font-weight:\s*700/i.test(htmlPart)) cur.correct = idx;
+            if (htmlIndicatesCorrect(htmlPart)) cur.correct = idx;
             continue;
         }
         const ansMatch = line.match(/(?:Đáp án|Đáp|Answer|Correct|Đúng)[:\s]*([A-D]|\d+)/i);
@@ -304,7 +458,7 @@ function parseDocxHtmlToQuizData(html) {
                 const nextIdx = cur.options.findIndex(o => !o);
                 const i = nextIdx === -1 ? cur.options.length : nextIdx;
                 cur.options[i] = bullet[1].trim();
-                if (/<strong|<b|font-weight:\s*700/i.test(htmlPart)) cur.correct = i;
+                if (htmlIndicatesCorrect(htmlPart)) cur.correct = i;
                 continue;
             }
             if (cur.options.length === 0) {
